@@ -17,6 +17,11 @@ namespace CourseTry1.Service.Implementations
             this.repository = repository;
         }
 
+        /*public async Task<BaseResponse<LoginViewModel>> GetByData(LoginViewModel entity)
+        {
+            var user = await repository.GetAll().FirstOrDefaultAsync(x => x.Login == entity.Login && x.Password == entity.Password);
+        }*/
+
         public async Task<BaseResponse<LoginViewModel>> Login(LoginViewModel entity)
         {
             try

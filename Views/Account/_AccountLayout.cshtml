@@ -1,12 +1,12 @@
 ﻿@{
     Layout = null;
 }
-<header>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @await Html.PartialAsync("../Shared/LinkPartial") 
     <title>@ViewBag.Title</title>
-</header>
+</head>
 <main class="main">
     <div class="container">
         @RenderBody()

@@ -79,3 +79,18 @@ border: 3px solid rgba(0, 128, 84, .95);
     color: #e63232;
     margin-top: 5px;
 }
+
+.main_inner--nav {
+    margin-bottom: 10px;
+    text-align: start;
+}
+
+.main_inner--back {
+    border-radius: 50%;
+    transition: all .3s;
+    padding: 3px 3px 8px 3px;
+}
+
+    .main_inner--back:hover {
+        background-color: #e8ebed;
+    }

@@ -8,5 +8,7 @@ namespace CourseTry1.Service.Interfaces
     {
         public Task<BaseResponse<LoginViewModel>> Register(RegisterViewModel entity);
         public Task<BaseResponse<LoginViewModel>> Login(LoginViewModel entity);
+
+        //public Task<BaseResponse<LoginViewModel>> GetByData(LoginViewModel entity);
     }
 }

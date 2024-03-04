@@ -3,9 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Главная</title>
+    <title>@ViewBag.Title</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/CourseTry1.styles.css" asp-append-version="true" />
     @await Html.PartialAsync("LinkPartial")
 </head>
 <body>
@@ -13,25 +12,49 @@
         <div class="header_inner">
             <div class="header_inner--logo">
                 <a href="#" class="header_inner--img">
-                    <img src="~/img/bntu-logo.png" width="60" height="60" alt="logo btnu" />
+                    <img src="~/img/bntu-logo.png" width="50" height="50" alt="logo btnu" />
                 </a>
             </div>
             <div class="header_inner--profile">
                 <ul class="header_inner--miniprofile">
                     <li class="header_inner--item">
-                        @User.Identity.Name
+                        <div class="header_droparrow">
+                            <span>@User.Identity.Name </span>
+                            <img src="~/img/drop-down-arrow rotated.svg" width="20" height="20" alt="arrowdown" />
+                        </div>
                         <ul class="header_inner--setting">
-                            <li class="header_inner--subItem"><a asp-action="Logout" asp-controller="Account">Настройки</a></li>
-                            <li class="header_inner--subItem"><a asp-action="Logout" asp-controller="Account">Выйти</a></li>
+                            @if(User.IsInRole("Admin"))
+                            {
+                                <li class="header_inner--subItem">
+                                    <img src="~/img/admin-setting.svg" width="20" height="20" alt="setting" /><a asp-controller="Home" asp-action="SettingRole">Роли</a>
+                                </li>
+                            }
+                            
+                            <li class="header_inner--subItem">
+                               <img src="~/img/setting.svg" width="20" height="20" alt="setting" /><a href="#">Настройки</a>
+                            </li>
+                            <li class="header_inner--subItem">
+                                <img src="~/img/exit.svg" width="20" height="20" alt="exit acccount" /><a asp-action="Logout" asp-controller="Account">Выйти</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
             </div>
         </div>
     </header>
+
     @RenderBody()
     <footer class="footer">
-
+        <nav class="footer_nav">
+            <ul class="footer_nav--text">
+                Разработанно студентом гр.10702122 Зеленухо А.Д.
+            </ul>
+            <ul class="footer_nav--link">
+                <li class="footer_nav--item"></li>
+                <li class="footer_nav--item"></li>
+                <li class="footer_nav--item"></li>
+            </ul>
+        </nav>
     </footer>
     
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

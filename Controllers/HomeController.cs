@@ -4,11 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CourseTry1.Controllers
 {
-    
+    [Authorize]
     public class HomeController : Controller
     {
-        [Authorize]
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public IActionResult SettingRole()
         {
             return View();
         }

@@ -23,5 +23,15 @@ namespace CourseTry1.Dal.Repositories
         {
             return context.Users;
         }
+
+        public async Task<User> GetById(int id)
+        {
+            return await GetAll().FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<User> GetByLogin(string login)
+        {
+            return await GetAll().FirstOrDefaultAsync(x => x.Login == login);
+        }
     }
 }

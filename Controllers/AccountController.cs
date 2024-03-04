@@ -91,10 +91,12 @@ namespace CourseTry1.Controllers
 
         private async Task Authentification(LoginViewModel model)
         {
+            var user = await accountService.GetUserByLogin(model.Login);
+
             var claims = new List<Claim>()
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, model.Login),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, Role.User.ToString())
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Data.Role.ToString())
             };
 
             ClaimsIdentity id = new(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,

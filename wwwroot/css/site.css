@@ -1,8 +1,24 @@
-.main {
-    background-color: #e8ebed;
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    min-height: 100vh;
     font-family: Roboto;
     font-weight: 400;
     font-size: 14px;
+}
+
+a:hover {
+    color: black;
+}
+
+.main {
+    background-color: #e8ebed;
+    /*font-family: Roboto;
+    font-weight: 400;
+    font-size: 14px;*/
 }
 
 .container {
@@ -67,6 +83,7 @@ border: 3px solid rgba(0, 128, 84, .95);
 
 .btn:hover {
     background-color: rgba(0, 128, 84, .95);
+    color: white;
 }
 
 .main_inner--container-btn {
@@ -96,10 +113,11 @@ border: 3px solid rgba(0, 128, 84, .95);
 }
 
 .header {
-    height: 120px;
+    height: 80px;
     background-color: #fff;
     border-bottom: 1px solid #eeeeee;
     align-items: center;
+
 }
 
 .header_inner {
@@ -113,5 +131,103 @@ border: 3px solid rgba(0, 128, 84, .95);
 .header_inner--miniprofile {
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    
+}
+
+.header_inner--item {
+    position: relative;
+    width: 140px;
+}
+
+.header_inner--item span {
+    font-size: 20px;
+}
+
+.header_inner--profile {
+    height: 100%;
+    margin-right: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header_inner--setting {
+    position: absolute;
+    left: 0px;
+    padding: 0px;
+    padding-top: 20px;
+    display: none;
+    transition: all .5s;
+    background-color: #fff;
+}
+
+.header_inner--item:hover > .header_inner--setting {
+    display:initial;
+}
+
+.header_inner--subItem {
+    height: 100%;
+    font-size: 20px;
+    padding: 8px 0 8px 0;
+    border: 1px solid rgba(0,0,0, 0.1);
+    transition: all 0.3s;
+}
+
+.header_inner--subItem:hover {
+    background-color: #e8ebed;
+}
+
+.header_inner--subItem img {
+    margin-right: 10px;
+}
+
+.header_droparrow > img{
+    transition: all .3s;
+}
+
+.header_droparrow:hover > img {
+    transform: rotate(-180deg);
+}
+
+.footer {
+    padding: 30px 20px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+.main_search {
+    display: flex;
+    align-items: center;
+   padding: 50px 0;
+}
+
+.main_serach--inner {
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.main_serach--inner img {
+    margin-right: 20px;
+    font-size: 20px;
+
+}
+
+.main_search--btn
+{
+    font-size: 20px;
+    width: 130px;
+    margin-left: 20px;
+}
+
+.main_search--input 
+{
+    width: 400px;
+    height: 50px;
+    font-size: 20px;
+    font-family: Roboto;
+    font-weight: 400;
 }

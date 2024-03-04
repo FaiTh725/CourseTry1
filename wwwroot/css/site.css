@@ -91,6 +91,27 @@ border: 3px solid rgba(0, 128, 84, .95);
     padding: 3px 3px 8px 3px;
 }
 
-    .main_inner--back:hover {
-        background-color: #e8ebed;
-    }
+.main_inner--back:hover {
+    background-color: #e8ebed;
+}
+
+.header {
+    height: 120px;
+    background-color: #fff;
+    border-bottom: 1px solid #eeeeee;
+    align-items: center;
+}
+
+.header_inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 37px;
+    height: 100%;
+}
+
+.header_inner--miniprofile {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}

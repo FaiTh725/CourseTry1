@@ -10,7 +10,24 @@
 </head>
 <body>
     <header class="header">
-
+        <div class="header_inner">
+            <div class="header_inner--logo">
+                <a href="#" class="header_inner--img">
+                    <img src="~/img/bntu-logo.png" width="60" height="60" alt="logo btnu" />
+                </a>
+            </div>
+            <div class="header_inner--profile">
+                <ul class="header_inner--miniprofile">
+                    <li class="header_inner--item">
+                        @User.Identity.Name
+                        <ul class="header_inner--setting">
+                            <a href="#" class="header_inner--info"></a>
+                            <input type="submit" value="Выйти" class="header_inner--logout" />
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </header>
     @RenderBody()
     <footer class="footer">

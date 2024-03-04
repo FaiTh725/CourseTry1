@@ -21,8 +21,8 @@
                     <li class="header_inner--item">
                         @User.Identity.Name
                         <ul class="header_inner--setting">
-                            <a href="#" class="header_inner--info"></a>
-                            <input type="submit" value="Выйти" class="header_inner--logout" />
+                            <li class="header_inner--subItem"><a asp-action="Logout" asp-controller="Account">Настройки</a></li>
+                            <li class="header_inner--subItem"><a asp-action="Logout" asp-controller="Account">Выйти</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -33,7 +33,7 @@
     <footer class="footer">
 
     </footer>
-
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

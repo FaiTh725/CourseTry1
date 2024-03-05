@@ -213,7 +213,6 @@ border: 3px solid rgba(0, 128, 84, .95);
 .main_serach--inner img {
     margin-right: 20px;
     font-size: 20px;
-
 }
 
 .main_search--btn
@@ -231,3 +230,46 @@ border: 3px solid rgba(0, 128, 84, .95);
     font-family: Roboto;
     font-weight: 400;
 }
+
+.main_search--area {
+    position:relative;
+}
+
+.main_table--inner {
+    padding: 0 50px;
+    margin-top: 40px;
+}
+
+.main_table--table {
+    border-radius: 10px;
+    border: 2px solid rgba(0,0,0,0.1);
+    font-size: 16px;
+    display: block;
+    margin: 0 auto;
+    padding: 20px 40px;
+    max-width: 80%;
+    min-height: 61vh;
+    max-height: 61vh;
+    overflow: scroll;
+    background-color: #fff;
+}
+
+.main_table--head tr th {
+    font-size: 25px;
+    width: 36%
+}
+
+.main_table--body tr {
+    height: 50px;
+}
+
+.main_table--role-selector {
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
+}
+
+.main_table--role-selector:hover {
+    box-shadow: 0 0 1px rgba(0,0,0, 0.2)
+}
+

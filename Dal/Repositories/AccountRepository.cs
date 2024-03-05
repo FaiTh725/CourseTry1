@@ -33,5 +33,11 @@ namespace CourseTry1.Dal.Repositories
         {
             return await GetAll().FirstOrDefaultAsync(x => x.Login == login);
         }
+
+        public async Task Update(User entity)
+        {
+            context.Update(entity);
+            await context.SaveChangesAsync();
+        }
     }
 }

@@ -1,12 +1,10 @@
 ﻿using CourseTry1.Dal.Interfaces;
 using CourseTry1.Domain.Entity;
+using CourseTry1.Domain.Enum;
 using CourseTry1.Domain.Response;
 using CourseTry1.Domain.ViewModels.Account;
 using CourseTry1.Service.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices;
 
 namespace CourseTry1.Service.Implementations
 {
@@ -24,9 +22,9 @@ namespace CourseTry1.Service.Implementations
             {
                 var user = await repository.GetById(id);
 
-                if(user != null)
+                if (user != null)
                 {
-                    return new BaseResponse<User> 
+                    return new BaseResponse<User>
                     {
                         Data = user,
                         Description = "Успешно получили пользователя",
@@ -34,8 +32,8 @@ namespace CourseTry1.Service.Implementations
                     };
                 }
 
-                return new BaseResponse<User> 
-                { 
+                return new BaseResponse<User>
+                {
                     Data = null,
                     StatusCode = Domain.Enum.StatusCode.UnRegistered,
                     Description = "Данный пользователь не найден"
@@ -58,7 +56,7 @@ namespace CourseTry1.Service.Implementations
             {
                 var user = await repository.GetByLogin(login);
 
-                if(user != null)
+                if (user != null)
                 {
                     return new BaseResponse<User>
                     {
@@ -91,15 +89,15 @@ namespace CourseTry1.Service.Implementations
             try
             {
                 var users = repository.GetAll();
-            
-                return new BaseResponse<IEnumerable<User>> 
-                { 
+
+                return new BaseResponse<IEnumerable<User>>
+                {
                     Data = users,
                     StatusCode = Domain.Enum.StatusCode.Ok,
                     Description = "Успешно получили пользователей"
                 };
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return new BaseResponse<IEnumerable<User>>
                 {
@@ -117,7 +115,7 @@ namespace CourseTry1.Service.Implementations
             {
                 var user = await repository.GetAll().FirstOrDefaultAsync(x => x.Login == entity.Login && x.Password == entity.Password);
 
-                if(user == null)
+                if (user == null)
                 {
                     return new BaseResponse<LoginViewModel>
                     {
@@ -152,9 +150,9 @@ namespace CourseTry1.Service.Implementations
             {
                 var user = await repository.GetAll().FirstOrDefaultAsync(x => x.Login == entity.Login);
 
-                if(user == null)
+                if (user == null)
                 {
-                    if(!entity.Password.Any(char.IsDigit))
+                    if (!entity.Password.Any(char.IsDigit))
                     {
                         return new BaseResponse<LoginViewModel>()
                         {
@@ -163,7 +161,7 @@ namespace CourseTry1.Service.Implementations
                             StatusCode = Domain.Enum.StatusCode.IncorrectPassword
                         };
                     }
-                    else if(!entity.Password.Any(char.IsLetter))
+                    else if (!entity.Password.Any(char.IsLetter))
                     {
                         return new BaseResponse<LoginViewModel>()
                         {
@@ -173,7 +171,8 @@ namespace CourseTry1.Service.Implementations
                         };
                     }
 
-                    await repository.Add(new User() {
+                    await repository.Add(new User()
+                    {
                         Login = entity.Login,
                         Password = entity.Password,
                     });
@@ -186,8 +185,8 @@ namespace CourseTry1.Service.Implementations
                     };
                 }
 
-                return new BaseResponse<LoginViewModel> 
-                { 
+                return new BaseResponse<LoginViewModel>
+                {
                     Description = "Уже зарегистрирован",
                     Data = null,
                     StatusCode = Domain.Enum.StatusCode.RegisteredUser
@@ -203,5 +202,7 @@ namespace CourseTry1.Service.Implementations
                 };
             }
         }
+
+        
     }
 }

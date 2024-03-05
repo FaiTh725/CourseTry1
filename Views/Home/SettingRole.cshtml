@@ -1,25 +1,52 @@
-﻿<main class="main">
+﻿@using CourseTry1.Domain.Entity
+@using CourseTry1.Domain.Enum
+@model IEnumerable<User>
+
+<main class="main">
     <div class="main_search">
         <div class="main_serach--inner">
             <img src="~/img/search.svg" width="60" height="60" alt="icon to search" />
-            <form class="main_search--area" method="post">
-                <input class="main_search--input main_inner--input" type="text" />
+            <form class="main_search--area" asp-controller="Home" asp-action="SettingRole" method="post">
+                <input class="main_search--input main_inner--input" type="text" name="query" placeholder="Id-Login-Role" />
                 <input class="btn main_search--btn" type="submit" value="Найти" />
             </form>
+            <span class="main_inner--validation" asp-validation-summary="ModelOnly"></span>
         </div>
     </div>
     <div class="main_table">
-        <table class="main_table--table">
-            <thead>
-                <tr>
-                    <th>Login</th>
-                    <th>Password</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="main_table--inner">
+            <table class="main_table--table">
+                <thead class="main_table--head">
+                    <tr>
+                        <th>Id</th>
+                        <th>Логин</th>
+                        <th>Роль</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody class="main_table--body">
+                    
+                        @foreach (var item in @Model)
+                        {
+                            <form method="post" asp-action="UpdateUser" asp-controller="Home">
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Login</td>
+                            <td>
+                                <select class="main_table--role-selector" name="role" asp-for="@item.Role" asp-items="Html.GetEnumSelectList<Role>()">
+                                </select>
+                            </td>
+                            <td>
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <input class="btn main_table--save" value="Сохранить" type="submit" />
+                            </td>
 
-            </tbody>
-        </table>
+                        </tr> 
+                        </form>
+                        }                   
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </main>

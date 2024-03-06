@@ -29,7 +29,7 @@ namespace CourseTry1.Controllers
         public IActionResult SettingRole()
         {
             var response = homeService.SortedUser("");
-            
+
             if(response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
                 return View(response.Data);

@@ -1,6 +1,7 @@
 ﻿
 <div class="main">
     <aside class="main_side">
+        <h3>Группы</h3>
         <ul class="main_side--list-groups">
             <li class="main_side--item">test</li>
             <li class="main_side--item">test</li>
@@ -11,5 +12,15 @@
             <li class="main_side--item">test</li>
             <li class="main_side--item">test</li>
         </ul>
+        <form class="main_side--add">
+            <input class="main_side--input-file" type="file" id="fl" name="name" multiple="false" />
+            <label class="btn main_side--label-input" for="fl">Выберите файл</label>
+            
+            <div class="main_side--submit">
+                <button type="submit">
+                    <img src="~/img/plus.png" width="30" height="30" alt="Плюсик" />
+                </button>
+            </div>
+        </form>
     </aside>
 </div>

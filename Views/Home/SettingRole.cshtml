@@ -21,14 +21,14 @@
                         <th>Id</th>
                         <th>Логин</th>
                         <th>Роль</th>
-                        <th>Действие</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody class="main_table--body">
-                    
-                        @foreach (var item in @Model)
-                        {
-                            <form method="post" asp-action="UpdateUser" asp-controller="Home">
+
+                    @foreach (var item in @Model)
+                    {
+                        <form method="post" asp-action="UpdateUser" asp-controller="Home">
                         <tr>
                             <td>@item.Id</td>
                             <td>@item.Login</td>
@@ -41,9 +41,9 @@
                                 <input class="btn main_table--save" value="Сохранить" type="submit" />
                             </td>
 
-                        </tr> 
+                        </tr>
                         </form>
-                        }                   
+                    }
                 </tbody>
             </table>
         </div>

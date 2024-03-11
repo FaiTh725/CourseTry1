@@ -33,6 +33,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IHomeService, HomeService>();
 builder.Services.AddTransient<IAccountRepository<User>,AccountRepository>();
+builder.Services.AddTransient<IFileRepository,FileRepository>();
 
 var app = builder.Build();
 

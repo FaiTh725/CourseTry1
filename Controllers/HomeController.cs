@@ -67,5 +67,19 @@ namespace CourseTry1.Controllers
 
             return View("SettingRole", homeService.SortedUser("").Data);
         }
+
+        // добавить только для методистов и админа
+        [HttpPost]
+        public async Task<IActionResult> AddFiles(IFormFile file)
+        {
+            var response = await homeService.AddFile(file);
+
+            if (response.StatusCode != Domain.Enum.StatusCode.Ok)
+            {
+                ModelState.AddModelError("", response.Description);
+            }
+
+            return Content(response.Description);
+        }
     }
 }

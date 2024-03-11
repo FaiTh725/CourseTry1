@@ -12,10 +12,48 @@ namespace CourseTry1.Service.Implementations
     public class HomeService : IHomeService
     {
         private readonly IAccountRepository<User> repository;
+        private readonly IFileRepository fileRepository;
+        private readonly IWebHostEnvironment appEnvironment;
 
-        public HomeService(IAccountRepository<User> repository)
+        public HomeService(IAccountRepository<User> repository, IFileRepository fileRepository, IWebHostEnvironment appEnvironment)
         {
             this.repository = repository;
+            this.fileRepository = fileRepository;
+            this.appEnvironment = appEnvironment;
+        }
+
+        public async Task<BaseResponse<ExcelFile>> AddFile(IFormFile uploadFile)
+        {
+            try
+            {
+                if(uploadFile != null)
+                {
+                    await fileRepository.Add(uploadFile, appEnvironment);
+
+                    return new BaseResponse<ExcelFile>
+                    {
+                        Data = null,
+                        StatusCode = StatusCode.Ok,
+                        Description = "Файл успешно добавлен"
+                    };
+                }
+
+                return new BaseResponse<ExcelFile>
+                {
+                    StatusCode = StatusCode.BadFile,
+                    Data = null,
+                    Description = "Не выбран файл"
+                };
+            }
+            catch
+            {
+                return new BaseResponse<ExcelFile>()
+                {
+                    Description = "Ошибка при загрузке файла",
+                    Data = null,
+                    StatusCode = Domain.Enum.StatusCode.BadRequest
+                };
+            }
         }
 
         public BaseResponse<IEnumerable<User>> SortedUser(string qutry)

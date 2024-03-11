@@ -89,6 +89,7 @@ namespace CourseTry1.Controllers
             return RedirectToAction("Login", "Account");
         }
 
+
         private async Task Authentification(LoginViewModel model)
         {
             var user = await accountService.GetUserByLogin(model.Login);

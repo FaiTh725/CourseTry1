@@ -3,6 +3,7 @@ using CourseTry1.Domain.Enum;
 using CourseTry1.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -68,8 +69,9 @@ namespace CourseTry1.Controllers
             return View("SettingRole", homeService.SortedUser("").Data);
         }
 
-        // добавить только для методистов и админа
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Methodist")]
         public async Task<IActionResult> AddFiles(IFormFile file)
         {
             var response = await homeService.AddFile(file);
@@ -79,7 +81,7 @@ namespace CourseTry1.Controllers
                 ModelState.AddModelError("", response.Description);
             }
 
-            return Content(response.Description);
+            return View("Index");
         }
     }
 }

@@ -12,16 +12,21 @@
             <li class="main_side--item">test</li>
             <li class="main_side--item">test</li>
         </ul>
-        <form method="post" class="main_side--add" enctype="multipart/form-data">
-            <input class="main_side--input-file" type="file" id="fl" name="file" value="file"
-            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required/>
-            <label class="btn main_side--label-input" for="fl">Выберите файл</label>
-            
-            <div class="main_side--submit">
-                <button type="submit" asp-action="AddFiles" asp-controller="Home">
-                    <img src="~/img/plus.png" width="30" height="30" alt="Плюсик" />
-                </button>
-            </div>
-        </form>
+        @if (!User.IsInRole("User"))
+        {
+            <form method="post" class="main_side--add" enctype="multipart/form-data">
+                <input class="main_side--input-file" type="file" id="fl" name="file" value="file"
+                       accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
+                <label class="btn main_side--label-input" for="fl">Выберите файл</label>
+
+                <div class="main_side--submit">
+                    <button type="submit" asp-action="AddFiles" asp-controller="Home">
+                        <img src="~/img/plus.png" width="30" height="30" alt="Плюсик" />
+                    </button>
+                </div>
+                <div class="validation" asp-validation-summary="ModelOnly"></div>
+            </form>
+        }
+
     </aside>
 </div>

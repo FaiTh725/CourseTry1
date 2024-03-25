@@ -17,6 +17,11 @@ namespace CourseTry1.Domain.Entity
 
         public DayOfWeek DayOfWeek { get; set; }
 
+        public long SheduleGroupId { get; set; }
+
+        [ForeignKey("SheduleGroupId")]
+        public SheduleGroup SheduleGroup { get; set; }
+
         public List<Subject> PairingTime { get; set; }
     }
 
@@ -27,5 +32,10 @@ namespace CourseTry1.Domain.Entity
         public string Name { get; set; }
 
         public string Time { get; set; }
+
+        public long DayWeekId {  get; set; }
+
+        [ForeignKey("DayWeekId")]
+        public DayWeek DayWeek { get; set; }
     }
 }

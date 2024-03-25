@@ -13,8 +13,19 @@ namespace CourseTry1.Domain.Entity
 
     public class DayWeek
     {
+        public long Id { get; set; }
+
         public DayOfWeek DayOfWeek { get; set; }
 
-        public List<KeyValuePair<string, string>> PairingTime { get; set; }
+        public List<Subject> PairingTime { get; set; }
+    }
+
+    public class Subject
+    {
+        public long Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Time { get; set; }
     }
 }

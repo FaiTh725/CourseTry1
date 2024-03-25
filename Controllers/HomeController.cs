@@ -106,7 +106,7 @@ namespace CourseTry1.Controllers
                     {
                         groups.Add(new SheduleGroup()
                         {
-                            NameGroup = $"{worksheet.Cells[2, i].Value} - {i}"
+                            NameGroup = worksheet.Cells[2, i].Value.ToString()!
                         });
 
                         groups[^1].Weeks = new List<DayWeek>();
@@ -137,14 +137,22 @@ namespace CourseTry1.Controllers
                                         if (worksheet.Cells[k, 2].Value == null)
                                         {
                                             groups[^1].Weeks[^1].PairingTime
-                                            .Add(new KeyValuePair<string, string>
-                                            (groups[^1].Weeks[^1].PairingTime[^1].Key, worksheet.Cells[k, i].Value.ToString()));
+                                            .Add(new Subject()
+                                            {
+                                                Time = groups[^1].Weeks[^1].PairingTime[^1].Time,
+                                                Name = worksheet.Cells[k, i].Value.ToString()!
+                                            });
+                                            //(groups[^1].Weeks[^1].PairingTime[^1].Time, worksheet.Cells[k, i].Value.ToString()));
                                         }
                                         else
                                         {
                                             groups[^1].Weeks[^1].PairingTime
-                                            .Add(new KeyValuePair<string, string>
-                                            (worksheet.Cells[k, 2].Value.ToString(), worksheet.Cells[k, i].Value.ToString()));
+                                            .Add(new Subject()
+                                            {
+                                                Time = worksheet.Cells[k, 2].Value.ToString()!,
+                                                Name = worksheet.Cells[k, i].Value.ToString()!
+                                            });
+                                            //(worksheet.Cells[k, 2].Value.ToString(), worksheet.Cells[k, i].Value.ToString()));
                                         }
 
                                     }
@@ -164,21 +172,10 @@ namespace CourseTry1.Controllers
                         Console.WriteLine($"\t{i.DayOfWeek.ToString()}");
                         foreach (var j in i.PairingTime)
                         {
-                            Console.WriteLine($"\t\t{j.Key}:{j.Value}");
+                            Console.WriteLine($"\t\t{j.Time}:{j.Name}");
                         }
                     }
                 }
-                /*for (int row = 1; row <= rowCount; row++)
-                {
-                    for (int col = 1; col <= colCount; col++)
-                    {
-                        if (worksheet.Cells[row, col].Value != null)
-                        {
-                            Console.Write($"{worksheet.Cells[row, col].Value} - {row}:{col}; ");
-                        }
-                    }
-                    Console.WriteLine();
-                }*/
             }
 
             return View("Setting");

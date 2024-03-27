@@ -84,31 +84,6 @@ namespace CourseTry1.Service.Implementations
             }
         }
 
-        public async Task<BaseResponse<IEnumerable<User>>> GetUsers()
-        {
-            try
-            {
-                var users = repository.GetAll();
-
-                return new BaseResponse<IEnumerable<User>>
-                {
-                    Data = users,
-                    StatusCode = Domain.Enum.StatusCode.Ok,
-                    Description = "Успешно получили пользователей"
-                };
-            }
-            catch (Exception ex)
-            {
-                return new BaseResponse<IEnumerable<User>>
-                {
-                    Data = null,
-                    StatusCode = Domain.Enum.StatusCode.BadRequest,
-                    Description = "Ошибка при получении пользователей"
-                };
-            }
-
-        }
-
         public async Task<BaseResponse<LoginViewModel>> Login(LoginViewModel entity)
         {
             try

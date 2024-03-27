@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 
-//ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
 namespace CourseTry1.Controllers
 {
     [Authorize]
@@ -84,9 +82,9 @@ namespace CourseTry1.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Methodist")]
-        public async Task<IActionResult> DeleteFile(int id)
+        public async Task<IActionResult> DeleteFile(string name)
         {
-            var response = await homeService.DeleteFile(id);
+            var response = await homeService.DeleteFile(name);
 
             if(response.StatusCode != Domain.Enum.StatusCode.Ok)
             {
@@ -98,9 +96,9 @@ namespace CourseTry1.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Methodist")]
-        public async Task<IActionResult> SelectFile(int id)
+        public async Task<IActionResult> SelectFile(string name)
         {
-            var response = await homeService.SelectFile(id);
+            var response = await homeService.SelectFile(name);
 
             if(response.StatusCode != Domain.Enum.StatusCode.Ok)
             {
@@ -108,6 +106,20 @@ namespace CourseTry1.Controllers
             }
 
             return RedirectToAction("SettingFiles");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateUser(int id, Role role)
+        {
+            var response = await homeService.UpdateUser(id, role);
+
+            if (response.StatusCode != Domain.Enum.StatusCode.Ok)
+            {
+                ModelState.AddModelError("", response.Description);
+            }
+
+            return View("SettingRole", homeService.SortedUser("").Data);
         }
 
         [HttpGet]

@@ -9,7 +9,6 @@ namespace CourseTry1.Service.Interfaces
     {
         public Task<BaseResponse<LoginViewModel>> Register(RegisterViewModel entity);
         public Task<BaseResponse<LoginViewModel>> Login(LoginViewModel entity);
-        public Task<BaseResponse<IEnumerable<User>>> GetUsers();
         public Task<BaseResponse<User>> GetUserById(int id);
         public Task<BaseResponse<User>> GetUserByLogin(string login);
     }

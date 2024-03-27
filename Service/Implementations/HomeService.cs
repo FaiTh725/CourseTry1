@@ -2,7 +2,10 @@
 using CourseTry1.Domain.Entity;
 using CourseTry1.Domain.Enum;
 using CourseTry1.Domain.Response;
+using CourseTry1.Domain.ViewModels.File;
+using CourseTry1.Domain.ViewModels.User;
 using CourseTry1.Service.Interfaces;
+using Microsoft.CodeAnalysis.CSharp;
 using OfficeOpenXml;
 
 namespace CourseTry1.Service.Implementations
@@ -25,27 +28,33 @@ namespace CourseTry1.Service.Implementations
             this.excelFileRepository = excelFileRepository;
         }
 
-        public BaseResponse<IEnumerable<ExcelFile>> GetFiles()
+        public BaseResponse<IEnumerable<FileViewModel>> GetFiles()
         {
             try
             {
                 var files = fileRepository.GetAll().ToList();
 
-                if (files == null)
+                var filesViewModel = new List<FileViewModel>();
+
+                foreach(var file in files)
                 {
-                    files = new List<ExcelFile>();
+                    filesViewModel.Add(new FileViewModel()
+                    {
+                        IsSelected = file.IsSelected,
+                        Name = file.Name
+                    });
                 }
 
-                return new BaseResponse<IEnumerable<ExcelFile>>()
+                return new BaseResponse<IEnumerable<FileViewModel>>()
                 {
-                    Data = files,
+                    Data = filesViewModel,
                     StatusCode = StatusCode.Ok,
                     Description = "Успешно получили все файлы"
                 };
             }
             catch
             {
-                return new BaseResponse<IEnumerable<ExcelFile>>()
+                return new BaseResponse<IEnumerable<FileViewModel>>()
                 {
                     Data = null,
                     StatusCode = StatusCode.BadRequest,
@@ -98,13 +107,27 @@ namespace CourseTry1.Service.Implementations
             }
         }
 
-        public BaseResponse<IEnumerable<User>> SortedUser(string qutry)
+        public BaseResponse<IEnumerable<UserViewModel>> SortedUser(string qutry)
         {
             if (qutry == "" || string.IsNullOrWhiteSpace(qutry))
             {
-                return new BaseResponse<IEnumerable<User>>
+                var users = repository.GetAll();
+
+                var usersViewModel = new List<UserViewModel>();
+
+                foreach(var user in users)
                 {
-                    Data = repository.GetAll(),
+                    usersViewModel.Add(new UserViewModel()
+                    {
+                        Id = user.Id,
+                        Login = user.Login,
+                        Role = user.Role
+                    });
+                }
+
+                return new BaseResponse<IEnumerable<UserViewModel>>
+                {
+                    Data = usersViewModel,
                     Description = "Вывод все записей",
                     StatusCode = StatusCode.Ok
                 };
@@ -136,16 +159,28 @@ namespace CourseTry1.Service.Implementations
                     users = users.Where(x => x.Login == login);
                 }
 
-                return new BaseResponse<IEnumerable<User>>
+                var usersViewModel = new List<UserViewModel>();
+
+                foreach (var user in users)
                 {
-                    Data = users,
+                    usersViewModel.Add(new UserViewModel()
+                    {
+                        Id = user.Id,
+                        Login = user.Login,
+                        Role = user.Role
+                    });
+                }
+
+                return new BaseResponse<IEnumerable<UserViewModel>>
+                {
+                    Data = usersViewModel,
                     Description = "Успешный поиск",
                     StatusCode = StatusCode.Ok
                 };
             }
             catch
             {
-                return new BaseResponse<IEnumerable<User>>()
+                return new BaseResponse<IEnumerable<UserViewModel>>()
                 {
                     Description = "ошибка при парсинге строки",
                     Data = null,
@@ -155,11 +190,11 @@ namespace CourseTry1.Service.Implementations
         }
 
 
-        public async Task<BaseResponse<ExcelFile>> DeleteFile(int id)
+        public async Task<BaseResponse<ExcelFile>> DeleteFile(string name)
         {
             try
             {
-                var excelFile = await fileRepository.GetById(id);
+                var excelFile = await fileRepository.GetByName(name);
 
                 if (excelFile != null)
                 {
@@ -191,11 +226,11 @@ namespace CourseTry1.Service.Implementations
             }
         }
 
-        public async Task<BaseResponse<ExcelFile>> SelectFile(int id)
+        public async Task<BaseResponse<ExcelFile>> SelectFile(string name)
         {
             try
             {
-                var excelFile = await fileRepository.GetById(id);
+                var excelFile = await fileRepository.GetByName(name);
 
                 if (excelFile != null)
                 {
@@ -247,6 +282,44 @@ namespace CourseTry1.Service.Implementations
                 return new BaseResponse<ExcelFile>
                 {
                     Description = "Ошибка изменении",
+                    StatusCode = Domain.Enum.StatusCode.BadRequest,
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<BaseResponse<User>> UpdateUser(int id, Role role)
+        {
+            try
+            {
+                var user = await repository.GetById(id);
+
+                if (user.Role != role)
+                {
+                    user.Role = role;
+
+                    await repository.Update(user);
+
+                    return new BaseResponse<User>()
+                    {
+                        Data = user,
+                        StatusCode = StatusCode.Ok,
+                        Description = "Успешно обновили"
+                    };
+                }
+
+                return new BaseResponse<User>
+                {
+                    Description = "Пользователь не был изменен",
+                    StatusCode = StatusCode.Ok,
+                    Data = user
+                };
+            }
+            catch
+            {
+                return new BaseResponse<User>
+                {
+                    Description = "Ошибка при обновлении",
                     StatusCode = Domain.Enum.StatusCode.BadRequest,
                     Data = null
                 };

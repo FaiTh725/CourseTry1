@@ -1,5 +1,8 @@
-﻿using CourseTry1.Dal.Interfaces;
+﻿using Azure.Core;
+using CourseTry1.Dal.Interfaces;
 using CourseTry1.Domain.Entity;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseTry1.Dal.Repositories
 {
@@ -11,6 +14,8 @@ namespace CourseTry1.Dal.Repositories
         {
             this.context = context;
         }
+
+
 
         public async Task Add(IFormFile file, IWebHostEnvironment appEnvironment)
         {
@@ -27,6 +32,36 @@ namespace CourseTry1.Dal.Repositories
             });
 
             await context.SaveChangesAsync();
+        }
+
+
+        public IQueryable<ExcelFile> GetAll()
+        {
+            return context.Files;
+        }
+
+        public async Task<ExcelFile> GetByName(string name)
+        {
+            return await GetAll().FirstOrDefaultAsync(x => x.Name == name);
+        }
+
+        public async Task DeleteFile(ExcelFile excelFile)
+        {
+            context.Files.Remove(excelFile);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<ExcelFile> UpdateFile(ExcelFile excelFile)
+        {
+            context.Files.Update(excelFile);
+            await context.SaveChangesAsync();
+
+            return excelFile;
+        }
+
+        public async Task<ExcelFile> GetById(int id)
+        {
+            return await context.Files.FirstOrDefaultAsync(x => x.Id == id);   
         }
     }
 }

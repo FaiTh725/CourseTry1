@@ -6,6 +6,7 @@
         UnRegistered = 2,
         IncorrectPassword = 3,
         BadFile = 4,
+        FileExcist = 5,
 
         Ok = 200,
         BadRequest = 400,

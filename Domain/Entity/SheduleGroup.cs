@@ -8,7 +8,7 @@ namespace CourseTry1.Domain.Entity
 
         public string NameGroup { get; set; }
 
-        public List<DayWeek> Weeks { get; set; }
+        public List<DayWeek> Weeks { get; set; } = new List<DayWeek> ();
     }
 
     public class DayWeek
@@ -22,7 +22,7 @@ namespace CourseTry1.Domain.Entity
         [ForeignKey("SheduleGroupId")]
         public SheduleGroup SheduleGroup { get; set; }
 
-        public List<Subject> PairingTime { get; set; }
+        public List<Subject> PairingTime { get; set; } = new List<Subject>();
     }
 
     public class Subject

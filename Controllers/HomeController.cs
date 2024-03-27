@@ -55,22 +55,7 @@ namespace CourseTry1.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateUser(int id, Role role)
-        {
-            var response = await homeService.UpdateUser(id, role);
-
-            if (response.StatusCode != Domain.Enum.StatusCode.Ok)
-            {
-                ModelState.AddModelError("", response.Description);
-            }
-
-            return View("SettingRole", homeService.SortedUser("").Data);
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Methodist")]
+        [Authorize(Roles = "Admin, Methodist")]
         public async Task<IActionResult> AddFiles(IFormFile file)
         {
             var response = await homeService.AddFile(file);
@@ -80,7 +65,49 @@ namespace CourseTry1.Controllers
                 ModelState.AddModelError("", response.Description);
             }
 
-            return View("Index");
+            return RedirectToAction("SettingFiles");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Methodist")]
+        public IActionResult SettingFiles()
+        {
+            var response = homeService.GetFiles();
+
+            if(response.StatusCode == Domain.Enum.StatusCode.Ok)
+            { 
+                return View(response.Data);
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, Methodist")]
+        public async Task<IActionResult> DeleteFile(int id)
+        {
+            var response = await homeService.DeleteFile(id);
+
+            if(response.StatusCode != Domain.Enum.StatusCode.Ok)
+            {
+                ModelState.AddModelError("", response.Description);
+            }
+
+            return RedirectToAction("SettingFiles");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, Methodist")]
+        public async Task<IActionResult> SelectFile(int id)
+        {
+            var response = await homeService.SelectFile(id);
+
+            if(response.StatusCode != Domain.Enum.StatusCode.Ok)
+            {
+                ModelState.AddModelError("", response.Description);
+            }
+
+            return RedirectToAction("SettingFiles");
         }
 
         [HttpGet]
@@ -142,7 +169,6 @@ namespace CourseTry1.Controllers
                                                 Time = groups[^1].Weeks[^1].PairingTime[^1].Time,
                                                 Name = worksheet.Cells[k, i].Value.ToString()!
                                             });
-                                            //(groups[^1].Weeks[^1].PairingTime[^1].Time, worksheet.Cells[k, i].Value.ToString()));
                                         }
                                         else
                                         {
@@ -152,7 +178,6 @@ namespace CourseTry1.Controllers
                                                 Time = worksheet.Cells[k, 2].Value.ToString()!,
                                                 Name = worksheet.Cells[k, i].Value.ToString()!
                                             });
-                                            //(worksheet.Cells[k, 2].Value.ToString(), worksheet.Cells[k, i].Value.ToString()));
                                         }
 
                                     }
@@ -160,8 +185,6 @@ namespace CourseTry1.Controllers
                             }
                         }
                     }
-
-
                 }
 
                 foreach (var group in groups)

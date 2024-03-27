@@ -341,9 +341,9 @@ a:hover {
 .main_side--add {
     overflow: hidden;
     display: flex;
-    justify-content: space-between;
+    justify-content: right;
     align-items: center;
-    padding: 10px;
+    padding: 30px;
     margin-top: 20px;
 }
 
@@ -354,9 +354,65 @@ a:hover {
     text-overflow: unset;
 }
 
-.main_side--submit {
-    align-items: center;
-    position:relative;
+.main_side--submit button:hover {
+    border: 2px solid #008054d9;
+
 }
 
+.main_side--submit {
+    align-items: center;
+    position: relative;
+    margin-left: 20px;
+}
 
+.main_side--submit button {
+    display: flex;
+    align-items: center;
+    color: #000;
+    padding: 4px;
+    border-radius: 13px;
+    border: 2px solid transparent;
+    transition: all .3s;
+}
+
+.main_side--submit button span {
+    margin-left: 5px;
+}
+
+.main_side--submit button {
+    margin-left: 5px;
+    font-size: 14px;
+}
+
+.setting {
+    height: 85vh;
+    overflow: scroll;
+    background-color: #e8ebed;
+}
+
+.setting-header{
+    height: 100px;
+    font-weight: bold;
+    padding-top: 30px;
+    text-align: center;
+    font-size: 25px;
+}
+
+.setting-item {
+    padding: 30px;
+}
+
+.setting-item--inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setting-item--inner span {
+    font-size: 20px;
+}
+
+.is_selected {
+    width: 40px;
+    height: 40px;
+}

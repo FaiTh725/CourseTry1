@@ -34,6 +34,7 @@ builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IHomeService, HomeService>();
 builder.Services.AddTransient<IAccountRepository<User>,AccountRepository>();
 builder.Services.AddTransient<IFileRepository,FileRepository>();
+builder.Services.AddTransient<IExcelFileRepository,ExcelFileRepository>();
 
 var app = builder.Build();
 

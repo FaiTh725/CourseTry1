@@ -12,7 +12,7 @@
             <li class="main_side--item">test</li>
             <li class="main_side--item">test</li>
         </ul>
-        @if (!User.IsInRole("User"))
+        @* @if (!User.IsInRole("User"))
         {
             <form method="post" class="main_side--add" enctype="multipart/form-data">
                 <input class="main_side--input-file" type="file" id="fl" name="file" value="file"
@@ -26,7 +26,7 @@
                 </div>
                 <div class="validation" asp-validation-summary="ModelOnly"></div>
             </form>
-        }
+        } *@
 
     </aside>
 </div>

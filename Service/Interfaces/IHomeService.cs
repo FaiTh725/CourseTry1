@@ -8,8 +8,12 @@ namespace CourseTry1.Service.Interfaces
     {
         public BaseResponse<IEnumerable<User>> SortedUser(string query);
 
-        public Task<BaseResponse<User>> UpdateUser(int id, Role role);
-
         public Task<BaseResponse<ExcelFile>> AddFile(IFormFile uploadFile);
+
+        public BaseResponse<IEnumerable<ExcelFile>> GetFiles();
+
+        public Task<BaseResponse<ExcelFile>> DeleteFile(int id);
+
+        public Task<BaseResponse<ExcelFile>> SelectFile(int id);
     }
 }

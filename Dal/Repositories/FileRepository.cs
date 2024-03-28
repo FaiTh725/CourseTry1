@@ -15,8 +15,6 @@ namespace CourseTry1.Dal.Repositories
             this.context = context;
         }
 
-
-
         public async Task Add(IFormFile file, IWebHostEnvironment appEnvironment)
         {
             string path = "/files/" + file.FileName;
@@ -34,6 +32,19 @@ namespace CourseTry1.Dal.Repositories
             await context.SaveChangesAsync();
         }
 
+        public bool Delete(string fileName, IWebHostEnvironment appEnvironment)
+        {
+            string path = "/files/" + fileName;
+
+            if(File.Exists(appEnvironment.WebRootPath + path))
+            {
+                File.Delete(appEnvironment.WebRootPath + path);
+
+                return true;
+            }
+
+            return false;
+        }
 
         public IQueryable<ExcelFile> GetAll()
         {
@@ -63,5 +74,6 @@ namespace CourseTry1.Dal.Repositories
         {
             return await context.Files.FirstOrDefaultAsync(x => x.Id == id);   
         }
+
     }
 }

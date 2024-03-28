@@ -3,9 +3,9 @@ using CourseTry1.Domain.Entity;
 using CourseTry1.Domain.Enum;
 using CourseTry1.Domain.Response;
 using CourseTry1.Domain.ViewModels.File;
+using CourseTry1.Domain.ViewModels.Group;
 using CourseTry1.Domain.ViewModels.User;
 using CourseTry1.Service.Interfaces;
-using Microsoft.CodeAnalysis.CSharp;
 using OfficeOpenXml;
 
 namespace CourseTry1.Service.Implementations
@@ -15,35 +15,31 @@ namespace CourseTry1.Service.Implementations
         private readonly IAccountRepository<User> repository;
         private readonly IFileRepository fileRepository;
         private readonly IExcelFileRepository excelFileRepository;
+        private readonly IGroupRepository groupRepository;
         private readonly IWebHostEnvironment appEnvironment;
 
         public HomeService(IAccountRepository<User> repository,
             IFileRepository fileRepository,
             IWebHostEnvironment appEnvironment,
-            IExcelFileRepository excelFileRepository)
+            IExcelFileRepository excelFileRepository,
+            IGroupRepository groupRepository)
         {
             this.repository = repository;
             this.fileRepository = fileRepository;
             this.appEnvironment = appEnvironment;
             this.excelFileRepository = excelFileRepository;
+            this.groupRepository = groupRepository;
         }
 
         public BaseResponse<IEnumerable<FileViewModel>> GetFiles()
         {
             try
             {
-                var files = fileRepository.GetAll().ToList();
-
-                var filesViewModel = new List<FileViewModel>();
-
-                foreach(var file in files)
+                var filesViewModel = fileRepository.GetAll().Select(x => new FileViewModel()
                 {
-                    filesViewModel.Add(new FileViewModel()
-                    {
-                        IsSelected = file.IsSelected,
-                        Name = file.Name
-                    });
-                }
+                    Name = x.Name,
+                    IsSelected = x.IsSelected
+                });
 
                 return new BaseResponse<IEnumerable<FileViewModel>>()
                 {
@@ -56,7 +52,7 @@ namespace CourseTry1.Service.Implementations
             {
                 return new BaseResponse<IEnumerable<FileViewModel>>()
                 {
-                    Data = null,
+                    Data = new List<FileViewModel>(),
                     StatusCode = StatusCode.BadRequest,
                     Description = "Ошибка при получении всех файлов"
                 };
@@ -107,6 +103,118 @@ namespace CourseTry1.Service.Implementations
             }
         }
 
+        public async Task<BaseResponse<IEnumerable<FileViewModel>>> DeleteFile(string name)
+        {
+            var filesViewModel = fileRepository.GetAll().Select(x => new FileViewModel()
+            {
+                Name = x.Name,
+                IsSelected = x.IsSelected
+            });
+
+            try
+            {
+                var excelFile = await fileRepository.GetByName(name);
+
+
+                if (excelFile != null)
+                {
+                    await fileRepository.DeleteFile(excelFile);
+                    fileRepository.Delete(excelFile.Name, appEnvironment);
+
+                    return new BaseResponse<IEnumerable<FileViewModel>>
+                    {
+                        Description = "Успешно удалили",
+                        StatusCode = Domain.Enum.StatusCode.Ok,
+                        Data = filesViewModel
+                    };
+                }
+
+                return new BaseResponse<IEnumerable<FileViewModel>>
+                {
+                    Description = "Файл не существует",
+                    StatusCode = Domain.Enum.StatusCode.BadFile,
+                    Data = filesViewModel
+                };
+            }
+            catch
+            {
+                return new BaseResponse<IEnumerable<FileViewModel>>
+                {
+                    Description = "Ошибка при удалении",
+                    StatusCode = Domain.Enum.StatusCode.BadRequest,
+                    Data = filesViewModel
+                };
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<FileViewModel>>> SelectFile(string name)
+        {
+            var filesViewModel = fileRepository.GetAll().Select(x => new FileViewModel()
+            {
+                Name = x.Name,
+                IsSelected = x.IsSelected
+            });
+
+            try
+            {
+                var excelFile = await fileRepository.GetByName(name);
+
+                if (excelFile != null)
+                {
+                    if (excelFile.IsSelected)
+                    {
+                        return new BaseResponse<IEnumerable<FileViewModel>>
+                        {
+                            Description = "Файл верного формата выбран как текущий",
+                            StatusCode = Domain.Enum.StatusCode.Ok,
+                            Data = filesViewModel
+                        };
+                    }
+
+                    //await excelFileRepository.Clear();
+
+                    var isCorrectFile = await ParseExcel(excelFile.Name);
+
+                    if (isCorrectFile)
+                    {
+                        excelFile.IsSelected = true;
+
+                        await fileRepository.UpdateFile(excelFile);
+
+                        return new BaseResponse<IEnumerable<FileViewModel>>
+                        {
+                            Description = "Файл верного формата выбран как текущий",
+                            StatusCode = Domain.Enum.StatusCode.Ok,
+                            Data = filesViewModel
+                        };
+                    }
+
+                    return new BaseResponse<IEnumerable<FileViewModel>>
+                    {
+                        Description = "Неверный формат Excel файла",
+                        StatusCode = Domain.Enum.StatusCode.BadFile,
+                        Data = filesViewModel
+                    };
+                }
+
+                return new BaseResponse<IEnumerable<FileViewModel>>
+                {
+                    Description = "Выбор несуществующего файла",
+                    StatusCode = Domain.Enum.StatusCode.BadFile,
+                    Data = filesViewModel
+                };
+            }
+            catch
+            {
+                return new BaseResponse<IEnumerable<FileViewModel>>
+                {
+                    Description = "Ошибка выборка избранного",
+                    StatusCode = Domain.Enum.StatusCode.BadRequest,
+                    Data = filesViewModel
+                };
+            }
+        }
+
         public BaseResponse<IEnumerable<UserViewModel>> SortedUser(string qutry)
         {
             if (qutry == "" || string.IsNullOrWhiteSpace(qutry))
@@ -115,7 +223,7 @@ namespace CourseTry1.Service.Implementations
 
                 var usersViewModel = new List<UserViewModel>();
 
-                foreach(var user in users)
+                foreach (var user in users)
                 {
                     usersViewModel.Add(new UserViewModel()
                     {
@@ -185,105 +293,6 @@ namespace CourseTry1.Service.Implementations
                     Description = "ошибка при парсинге строки",
                     Data = null,
                     StatusCode = Domain.Enum.StatusCode.BadRequest
-                };
-            }
-        }
-
-
-        public async Task<BaseResponse<ExcelFile>> DeleteFile(string name)
-        {
-            try
-            {
-                var excelFile = await fileRepository.GetByName(name);
-
-                if (excelFile != null)
-                {
-                    await fileRepository.DeleteFile(excelFile);
-
-                    return new BaseResponse<ExcelFile>
-                    {
-                        Description = "Успешно удалили",
-                        StatusCode = Domain.Enum.StatusCode.Ok,
-                        Data = excelFile
-                    };
-                }
-
-                return new BaseResponse<ExcelFile>
-                {
-                    Description = "Файл не существует",
-                    StatusCode = Domain.Enum.StatusCode.BadFile,
-                    Data = excelFile
-                };
-            }
-            catch
-            {
-                return new BaseResponse<ExcelFile>
-                {
-                    Description = "Ошибка при удалении",
-                    StatusCode = Domain.Enum.StatusCode.BadRequest,
-                    Data = null
-                };
-            }
-        }
-
-        public async Task<BaseResponse<ExcelFile>> SelectFile(string name)
-        {
-            try
-            {
-                var excelFile = await fileRepository.GetByName(name);
-
-                if (excelFile != null)
-                {
-                    if(excelFile.IsSelected)
-                    {
-                        return new BaseResponse<ExcelFile>
-                        {
-                            Description = "Файл верного формата выбран как текущий",
-                            StatusCode = Domain.Enum.StatusCode.Ok,
-                            Data = excelFile
-                        };
-                    }
-
-                    //await excelFileRepository.Clear();
-
-                    var isCorrectFile = await ParseExcel(excelFile.Name);
-
-                    if (isCorrectFile)
-                    {
-                        excelFile.IsSelected = true;
-
-                        await fileRepository.UpdateFile(excelFile);
-
-                        return new BaseResponse<ExcelFile>
-                        {
-                            Description = "Файл верного формата выбран как текущий",
-                            StatusCode = Domain.Enum.StatusCode.Ok,
-                            Data = excelFile
-                        };
-                    }
-
-                    return new BaseResponse<ExcelFile>
-                    {
-                        Description = "Неверный формат Excel файла",
-                        StatusCode = Domain.Enum.StatusCode.BadFile,
-                        Data = null
-                    };
-                }
-
-                return new BaseResponse<ExcelFile>
-                {
-                    Description = "Удаление несуществующего файла",
-                    StatusCode = Domain.Enum.StatusCode.BadFile,
-                    Data = null
-                };
-            }
-            catch
-            {
-                return new BaseResponse<ExcelFile>
-                {
-                    Description = "Ошибка изменении",
-                    StatusCode = Domain.Enum.StatusCode.BadRequest,
-                    Data = null
                 };
             }
         }
@@ -414,6 +423,34 @@ namespace CourseTry1.Service.Implementations
                 {
                     return false;
                 }
+            }
+        }
+
+        public BaseResponse<IEnumerable<GroupViewModel>> GetGroups()
+        {
+            try
+            {
+                var groups = groupRepository.GetGroups().Select(x => new GroupViewModel()
+                {
+                    Id = x.Id,
+                    Name = x.NameGroup
+                });
+                return new BaseResponse<IEnumerable<GroupViewModel>>
+                {
+                    Description = "Успешно получили группы",
+                    Data = groups,
+                    StatusCode = StatusCode.Ok
+                };
+            }
+            catch
+            {
+                return new BaseResponse<IEnumerable<GroupViewModel>>()
+                {
+
+                    Description = "",
+                    StatusCode = StatusCode.BadRequest,
+                    Data = new List<GroupViewModel>()
+                };
             }
         }
     }

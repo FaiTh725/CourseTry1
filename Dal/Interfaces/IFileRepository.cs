@@ -7,6 +7,8 @@ namespace CourseTry1.Dal.Interfaces
     {
         public Task Add(IFormFile file, IWebHostEnvironment appEnvironment);
 
+        public bool Delete(string fileName, IWebHostEnvironment appEnvironment);
+
         public Task<ExcelFile> GetByName(string name);
 
         public Task<ExcelFile> GetById(int id);

@@ -1,32 +1,37 @@
-﻿
+﻿@model IndexViewModel
+
+
 <div class="main">
     <aside class="main_side">
-        <h3>Группы</h3>
-        <ul class="main_side--list-groups">
-            <li class="main_side--item">test</li>
-            <li class="main_side--item">test</li>
-            <li class="main_side--item">test</li>
-            <li class="main_side--item">test</li>
-            <li class="main_side--item">test</li>
-            <li class="main_side--item">test</li>
-            <li class="main_side--item">test</li>
-            <li class="main_side--item">test</li>
-        </ul>
-        @* @if (!User.IsInRole("User"))
-        {
-            <form method="post" class="main_side--add" enctype="multipart/form-data">
-                <input class="main_side--input-file" type="file" id="fl" name="file" value="file"
-                       accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
-                <label class="btn main_side--label-input" for="fl">Выберите файл</label>
+        <div class="main_side_content">
+            <h3>Группы</h3>
 
-                <div class="main_side--submit">
-                    <button type="submit" asp-action="AddFiles" asp-controller="Home">
-                        <img src="~/img/plus.png" width="30" height="30" alt="Плюсик" />
-                    </button>
-                </div>
-                <div class="validation" asp-validation-summary="ModelOnly"></div>
-            </form>
-        } *@
+            <div class="main_side--add-group">
+                <form action="/" method="post">
+                    <select class="main_table--role-selector">
+                        @foreach(var group in Model.Groups)
+                        {
+                            <option value="@group.Id">@group.Name</option>
+                        }
+                    </select>
+
+                    <button class="btn main_side--submit" type="submit" asp-action="" asp-controller="">Добавить</button>
+                </form>
+
+                
+            </div>
+            <ul class="main_side--list-groups">
+                @foreach (var group in Model.TrackGroups)
+                {
+                    <form method="post">
+                        <input type="hidden" name="id" value="@group.Id" />
+                    <li>
+                        <input class="main_side--item" type="submit" asp-for="@group.Name" value="@group.Name" />
+                    </li>
+                    </form>
+                }
+            </ul>
+        </div>
 
     </aside>
 </div>

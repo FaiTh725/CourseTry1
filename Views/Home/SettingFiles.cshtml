@@ -23,7 +23,6 @@
                         <button class="btn main_table--save" type="submit" asp-action="DeleteFile" asp-controller="Home">Удалить</button>
                         <button class="btn main_table--save" type="submit" asp-action="SelectFile" asp-controller="Home">Выбрать избранным</button>
                     </div>
-                    <div class="validation" asp-validation-summary="ModelOnly"></div>
                 </div>
             </form>
         </div>
@@ -31,6 +30,7 @@
 
     <div class="setting-add">
         <form method="post" class="main_side--add" enctype="multipart/form-data">
+            <div class="validation" asp-validation-summary="ModelOnly"></div>
             <input class="main_side--input-file" type="file" id="fl" name="file" value="file"
                    accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
             <label class="btn main_side--label-input" for="fl">Выберите файл</label>
@@ -41,7 +41,6 @@
                     <span>Добавить</span>
                 </button>
             </div>
-            <div class="validation" asp-validation-summary="ModelOnly"></div>
         </form>
     </div>
 </div>

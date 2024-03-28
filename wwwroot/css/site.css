@@ -290,13 +290,23 @@ a:hover {
     border-end-end-radius: 20px;
     max-height: 85vh;
     padding: 20px;
-    overflow: scroll;
+    overflow: hidden;
     transition: .5s;
+    
+}
+
+.main_side_content {
+    display: none; /* —крытый контент при свернутом состо€нии */
 }
 
 .main_side:hover {
     width: 300px;
 }
+
+.main_side:hover .main_side_content {
+    display: block; /* ѕоказываем контент при наведении */
+}
+
 
 .main_side h3 {
     text-align: center;
@@ -323,11 +333,12 @@ a:hover {
     border: 3px solid #fff;
 }
 
-    .main_side--item:hover {
-        background-color: rgba(0, 128, 84, .85);
-        color: #fff;
-        border: 3px solid rgba(232, 235, 237, 0.5);
-    }
+.main_side--item:hover {
+    background-color: rgba(0, 128, 84, .85);
+    color:#fff;
+    border: 3px solid rgba(232, 235, 237, 0.5);
+}
+
 
 .main_side--input-file {
     width: 0.1px;

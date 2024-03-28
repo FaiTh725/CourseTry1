@@ -1,5 +1,6 @@
 ﻿using CourseTry1.Domain.Entity;
 using CourseTry1.Domain.Enum;
+using CourseTry1.Domain.ViewModels.Group;
 using CourseTry1.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,21 @@ namespace CourseTry1.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var groups = homeService.GetGroups();
+            return View(new IndexViewModel()
+            {
+                Groups = new(),
+                TrackGroups = new()
+            });
+            /*var trackGroups = 12;
+
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+               return View(response.Data);
+            }
+
+            ModelState.AddModelError("", response.Description);
+            return View(response.Data);*/
         }
 
         [HttpGet]
@@ -72,12 +87,12 @@ namespace CourseTry1.Controllers
         {
             var response = homeService.GetFiles();
 
-            if(response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if(response.StatusCode != Domain.Enum.StatusCode.Ok)
             { 
-                return View(response.Data);
+                ModelState.AddModelError("", response.Description);
             }
 
-            return View();
+            return View(response.Data);
         }
 
         [HttpPost]
@@ -91,7 +106,7 @@ namespace CourseTry1.Controllers
                 ModelState.AddModelError("", response.Description);
             }
 
-            return RedirectToAction("SettingFiles");
+            return View("SettingFiles", response.Data);
         }
 
         [HttpPost]
@@ -105,7 +120,7 @@ namespace CourseTry1.Controllers
                 ModelState.AddModelError("", response.Description);
             }
 
-            return RedirectToAction("SettingFiles");
+            return View("SettingFiles", response.Data);
         }
 
         [HttpPost]

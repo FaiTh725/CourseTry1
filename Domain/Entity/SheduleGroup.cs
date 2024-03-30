@@ -9,6 +9,8 @@ namespace CourseTry1.Domain.Entity
         public string NameGroup { get; set; }
 
         public List<DayWeek> Weeks { get; set; } = new List<DayWeek> ();
+
+        public List<Profile> Profile { get; set; } = new List<Profile> ();
     }
 
     public class DayWeek

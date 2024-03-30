@@ -11,7 +11,7 @@ namespace CourseTry1.Dal
         public DbSet<SheduleGroup> SheduleGroups { get; set; }
         public DbSet<DayWeek> DayWeeks { get; set; }
         public DbSet<Subject> Subjects { get; set; }
-
+        public DbSet<Profile> Profiles { get; set; }
 
         public AppDbContext(DbContextOptions options) : base(options)
         {
@@ -23,6 +23,7 @@ namespace CourseTry1.Dal
             modelBuilder.ApplyConfiguration(new SheduleGroupConfiguration());
             modelBuilder.ApplyConfiguration(new DayWeekConfiguration());
             modelBuilder.ApplyConfiguration(new SubjectConfiguration());
+            modelBuilder.ApplyConfiguration(new ProfileConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

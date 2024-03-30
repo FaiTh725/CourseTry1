@@ -1,5 +1,6 @@
 ﻿using CourseTry1.Domain.Entity;
 using CourseTry1.Domain.Enum;
+using CourseTry1.Domain.Response;
 using CourseTry1.Domain.ViewModels.Group;
 using CourseTry1.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -18,23 +19,40 @@ namespace CourseTry1.Controllers
             this.homeService = homeService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var groups = homeService.GetGroups();
-            return View(new IndexViewModel()
-            {
-                Groups = new(),
-                TrackGroups = new()
-            });
-            /*var trackGroups = 12;
+            var responseGetGroups = homeService.GetGroups();
 
-            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+            BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
+
+            if (User.Identity.IsAuthenticated)
             {
-               return View(response.Data);
+                responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity.Name);
+
             }
 
-            ModelState.AddModelError("", response.Description);
-            return View(response.Data);*/
+            return View(new IndexViewModel()
+            {
+                Groups = responseGetGroups.Data.ToList() ?? new List<GroupViewModel>(),
+                TrackGroups = responseGetSelectedGroups == null ? 
+                new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
+            });
+
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddGroup(int idGroup)
+        {
+
+            var response = await homeService.AddGroupToUser(User.Identity.Name, idGroup);
+
+            if(response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpGet]

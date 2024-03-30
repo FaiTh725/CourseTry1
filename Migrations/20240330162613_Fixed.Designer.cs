@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourseTry1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240329123249_RestoreDatabase")]
-    partial class RestoreDatabase
+    [Migration("20240330162613_Fixed")]
+    partial class Fixed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,6 +34,9 @@ namespace CourseTry1.Migrations
 
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
+
+                    b.Property<long>("GroupId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("SheduleGroupId")
                         .HasColumnType("bigint");
@@ -67,6 +70,25 @@ namespace CourseTry1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Files");
+                });
+
+            modelBuilder.Entity("CourseTry1.Domain.Entity.Profile", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Profiles");
                 });
 
             modelBuilder.Entity("CourseTry1.Domain.Entity.SheduleGroup", b =>
@@ -128,12 +150,30 @@ namespace CourseTry1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long>("ProfileId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ProfileSheduleGroup", b =>
+                {
+                    b.Property<long>("GroupsId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProfilesId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("GroupsId", "ProfilesId");
+
+                    b.HasIndex("ProfilesId");
+
+                    b.ToTable("ProfileSheduleGroup");
                 });
 
             modelBuilder.Entity("CourseTry1.Domain.Entity.DayWeek", b =>
@@ -147,6 +187,17 @@ namespace CourseTry1.Migrations
                     b.Navigation("SheduleGroup");
                 });
 
+            modelBuilder.Entity("CourseTry1.Domain.Entity.Profile", b =>
+                {
+                    b.HasOne("CourseTry1.Domain.Entity.User", "User")
+                        .WithOne("Profile")
+                        .HasForeignKey("CourseTry1.Domain.Entity.Profile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CourseTry1.Domain.Entity.Subject", b =>
                 {
                     b.HasOne("CourseTry1.Domain.Entity.DayWeek", "DayWeek")
@@ -158,6 +209,21 @@ namespace CourseTry1.Migrations
                     b.Navigation("DayWeek");
                 });
 
+            modelBuilder.Entity("ProfileSheduleGroup", b =>
+                {
+                    b.HasOne("CourseTry1.Domain.Entity.SheduleGroup", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CourseTry1.Domain.Entity.Profile", null)
+                        .WithMany()
+                        .HasForeignKey("ProfilesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CourseTry1.Domain.Entity.DayWeek", b =>
                 {
                     b.Navigation("PairingTime");
@@ -166,6 +232,12 @@ namespace CourseTry1.Migrations
             modelBuilder.Entity("CourseTry1.Domain.Entity.SheduleGroup", b =>
                 {
                     b.Navigation("Weeks");
+                });
+
+            modelBuilder.Entity("CourseTry1.Domain.Entity.User", b =>
+                {
+                    b.Navigation("Profile")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

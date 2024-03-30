@@ -1,5 +1,6 @@
 ﻿using CourseTry1.Domain.Enum;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CourseTry1.Domain.Entity
 {
@@ -13,6 +14,8 @@ namespace CourseTry1.Domain.Entity
 
         public Role Role { get; set; } = Role.User;
 
-        public Profile Profile { get; set; }
+        public long? ProfileId {  get; set; }
+
+        public Profile? Profile { get; set; }
     }
 }

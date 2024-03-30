@@ -32,7 +32,7 @@ namespace CourseTry1.Dal.Repositories
 
         public async Task Clear()
         {
-            context.RemoveRange(GetAllGroups());
+            context.SheduleGroups.RemoveRange(GetAllGroups());
 
             await context.SaveChangesAsync();
         }

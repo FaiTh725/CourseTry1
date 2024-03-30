@@ -32,10 +32,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IHomeService, HomeService>();
-builder.Services.AddTransient<IAccountRepository<User>,AccountRepository>();
-builder.Services.AddTransient<IFileRepository,FileRepository>();
-builder.Services.AddTransient<IExcelFileRepository,ExcelFileRepository>();
-builder.Services.AddTransient<IGroupRepository,GroupRepository>();
+builder.Services.AddTransient<IAccountRepository<User>, AccountRepository>();
+builder.Services.AddTransient<IFileRepository, FileRepository>();
+builder.Services.AddTransient<IExcelFileRepository, ExcelFileRepository>();
+builder.Services.AddTransient<IGroupRepository, GroupRepository>();
+builder.Services.AddTransient<IProfileRepository, ProfileRepository>();
 
 var app = builder.Build();
 

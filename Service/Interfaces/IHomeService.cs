@@ -22,5 +22,10 @@ namespace CourseTry1.Service.Interfaces
         public Task<BaseResponse<User>> UpdateUser(int id, Role role);
 
         public BaseResponse<IEnumerable<GroupViewModel>> GetGroups();
+
+        public Task<BaseResponse<IEnumerable<GroupViewModel>>> GetSelectedGroup(string name);
+
+        public Task<BaseResponse<Profile>> AddGroupToUser(string name, int idGroup);
+
     }
 }

@@ -10,13 +10,9 @@ namespace CourseTry1.Dal.Configuration
         {
             builder.HasKey(x => x.Id);
 
-            builder
-                .HasOne(x => x.User)
-                .WithOne(x => x.Profile);
+            /*builder.HasOne(x => x.User).WithOne(x => x.Profile);
 
-            builder.
-                HasOne(x => x.SheduleGroup)
-                .WithMany(x => x.Profile);
+            builder.HasMany(x => x.SheduleGroup).WithMany(x => x.Profiles);*/
         }
     }
 }

@@ -20,10 +20,11 @@ namespace CourseTry1.Dal
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new SheduleGroupConfiguration());
+            /*modelBuilder.ApplyConfiguration(new SheduleGroupConfiguration());
             modelBuilder.ApplyConfiguration(new DayWeekConfiguration());
             modelBuilder.ApplyConfiguration(new SubjectConfiguration());
             modelBuilder.ApplyConfiguration(new ProfileConfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());*/
 
             base.OnModelCreating(modelBuilder);
         }

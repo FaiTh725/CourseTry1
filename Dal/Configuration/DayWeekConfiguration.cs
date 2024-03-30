@@ -10,9 +10,9 @@ namespace CourseTry1.Dal.Configuration
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasMany(f => f.PairingTime).
-                WithOne(f => f.DayWeek).
-                OnDelete(DeleteBehavior.Cascade);
+            /*builder.HasMany(f => f.PairingTime).WithOne(f => f.DayWeek);
+
+            builder.HasOne(x => x.SheduleGroup).WithMany(x => x.Weeks);*/
         }
     }
 }

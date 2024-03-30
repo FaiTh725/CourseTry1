@@ -7,15 +7,15 @@
             <h3>Группы</h3>
 
             <div class="main_side--add-group">
-                <form action="/" method="post">
-                    <select class="main_table--role-selector">
+                <form method="post">
+                    <select class="main_table--role-selector" name="idGroup">
                         @foreach(var group in Model.Groups)
                         {
-                            <option value="@group.Id">@group.Name</option>
+                            <option value="@group.Id" >@group.Name</option>
                         }
                     </select>
 
-                    <button class="btn main_side--submit" type="submit" asp-action="" asp-controller="">Добавить</button>
+                    <button class="btn main_side--submit" type="submit" asp-action="AddGroup" asp-controller="Home">Добавить</button>
                 </form>
 
                 
@@ -25,9 +25,9 @@
                 {
                     <form method="post">
                         <input type="hidden" name="id" value="@group.Id" />
-                    <li>
-                        <input class="main_side--item" type="submit" asp-for="@group.Name" value="@group.Name" />
-                    </li>
+                        <li>
+                            <input class="main_side--item" type="submit" asp-for="@group.Name" value="@group.Name" />
+                        </li>
                     </form>
                 }
             </ul>

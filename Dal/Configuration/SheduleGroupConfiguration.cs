@@ -10,9 +10,8 @@ namespace CourseTry1.Dal.Configuration
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasMany(f => f.Weeks).
-                WithOne(f => f.SheduleGroup).
-                OnDelete(DeleteBehavior.Cascade);
+            /*builder.HasMany(f => f.Weeks).WithOne(x => x.SheduleGroup).HasForeignKey(x => x.GroupId);
+            builder.HasMany(f => f.Profiles).WithMany(x => x.SheduleGroup);*/
         }
     }
 }

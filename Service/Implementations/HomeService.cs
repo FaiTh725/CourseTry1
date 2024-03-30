@@ -16,19 +16,22 @@ namespace CourseTry1.Service.Implementations
         private readonly IFileRepository fileRepository;
         private readonly IExcelFileRepository excelFileRepository;
         private readonly IGroupRepository groupRepository;
+        private readonly IProfileRepository profileRepository;
         private readonly IWebHostEnvironment appEnvironment;
 
         public HomeService(IAccountRepository<User> repository,
             IFileRepository fileRepository,
             IWebHostEnvironment appEnvironment,
             IExcelFileRepository excelFileRepository,
-            IGroupRepository groupRepository)
+            IGroupRepository groupRepository,
+            IProfileRepository profileRepository)
         {
             this.repository = repository;
             this.fileRepository = fileRepository;
             this.appEnvironment = appEnvironment;
             this.excelFileRepository = excelFileRepository;
             this.groupRepository = groupRepository;
+            this.profileRepository = profileRepository;
         }
 
         public BaseResponse<IEnumerable<FileViewModel>> GetFiles()
@@ -447,9 +450,82 @@ namespace CourseTry1.Service.Implementations
                 return new BaseResponse<IEnumerable<GroupViewModel>>()
                 {
 
-                    Description = "",
+                    Description = "Ошибка во время выполнения",
                     StatusCode = StatusCode.BadRequest,
                     Data = new List<GroupViewModel>()
+                };
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<GroupViewModel>>> GetSelectedGroup(string name)
+        {
+            try
+            {
+                var user = await repository.GetByLogin(name);
+
+                var groups = (await profileRepository.GetSelectedGroup(user)).Select(x => new GroupViewModel()
+                {
+                    Id = x.Id,
+                    Name = x.NameGroup
+                });
+
+                return new BaseResponse<IEnumerable<GroupViewModel>>()
+                {
+
+                    Description = "Успешно получили выбранные группы",
+                    StatusCode = StatusCode.Ok,
+                    Data = groups
+                };
+            }
+            catch
+            {
+                return new BaseResponse<IEnumerable<GroupViewModel>>()
+                {
+
+                    Description = "Ошибка во время выполнения",
+                    StatusCode = StatusCode.BadRequest,
+                    Data = new List<GroupViewModel>()
+                };
+            }
+        }
+
+        public async Task<BaseResponse<Profile>> AddGroupToUser(string name, int idGroup)
+        {
+            try
+            {
+                var user = await repository.GetByLogin(name);
+                var group = await groupRepository.GetGroupById(idGroup);
+
+                if (user == null || group == null)
+                {
+                    return new BaseResponse<Profile>()
+                    {
+
+                        Description = "Не существует такого пользователя или группы",
+                        StatusCode = StatusCode.BadRequest,
+                        Data = new Profile()
+                    };
+                }
+
+                await profileRepository.AddProfileUser(user);
+
+                var profile = await profileRepository.AddGroup(user, group);
+
+                return new BaseResponse<Profile>()
+                {
+                    Description = "Успешно добавили группу",
+                    StatusCode = StatusCode.Ok,
+                    Data = profile
+                };
+            }
+            catch
+            {
+                return new BaseResponse<Profile>()
+                {
+
+                    Description = "Ошибка во время выполнения",
+                    StatusCode = StatusCode.BadRequest,
+                    Data = new Profile()
                 };
             }
         }

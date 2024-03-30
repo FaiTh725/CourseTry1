@@ -6,5 +6,7 @@ namespace CourseTry1.Dal.Interfaces
     public interface IGroupRepository
     {
         IQueryable<SheduleGroup> GetGroups();
+
+        Task<SheduleGroup> GetGroupById(int id);
     }
 }

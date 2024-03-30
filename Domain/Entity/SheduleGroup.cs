@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.Contracts;
 
 namespace CourseTry1.Domain.Entity
 {
@@ -10,7 +11,7 @@ namespace CourseTry1.Domain.Entity
 
         public List<DayWeek> Weeks { get; set; } = new List<DayWeek> ();
 
-        public List<Profile> Profile { get; set; } = new List<Profile> ();
+        public List<Profile> Profiles { get; set; } = new List<Profile>();
     }
 
     public class DayWeek
@@ -21,7 +22,8 @@ namespace CourseTry1.Domain.Entity
 
         public long SheduleGroupId { get; set; }
 
-        [ForeignKey("SheduleGroupId")]
+        public long GroupId { get; set; }
+
         public SheduleGroup SheduleGroup { get; set; }
 
         public List<Subject> PairingTime { get; set; } = new List<Subject>();
@@ -37,7 +39,6 @@ namespace CourseTry1.Domain.Entity
 
         public long DayWeekId {  get; set; }
 
-        [ForeignKey("DayWeekId")]
         public DayWeek DayWeek { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace CourseTry1.Domain.Entity
 
         public List<DayWeek> Weeks { get; set; } = new List<DayWeek> ();
 
-        public List<Profile> Profiles { get; set; } = new List<Profile>();
+        /*public List<Profile> Profiles { get; set; } = new List<Profile>();*/
     }
 
     public class DayWeek
@@ -21,8 +21,6 @@ namespace CourseTry1.Domain.Entity
         public DayOfWeek DayOfWeek { get; set; }
 
         public long SheduleGroupId { get; set; }
-
-        public long GroupId { get; set; }
 
         public SheduleGroup SheduleGroup { get; set; }
 

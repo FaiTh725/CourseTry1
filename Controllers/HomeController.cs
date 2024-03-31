@@ -2,9 +2,11 @@
 using CourseTry1.Domain.Enum;
 using CourseTry1.Domain.Response;
 using CourseTry1.Domain.ViewModels.Group;
+using CourseTry1.Models;
 using CourseTry1.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using OfficeOpenXml;
 
 namespace CourseTry1.Controllers
@@ -13,31 +15,82 @@ namespace CourseTry1.Controllers
     public class HomeController : Controller
     {
         private readonly IHomeService homeService;
+        private readonly IConfiguration configuration;
+        private readonly IMemoryCache memoryCache;
 
-        public HomeController(IHomeService homeService)
+        public HomeController(IHomeService homeService, 
+            IConfiguration configuration,
+            IMemoryCache memoryCache)
         {
             this.homeService = homeService;
+            this.configuration = configuration;
+            this.memoryCache = memoryCache;
         }
 
+        // TODO #1 сделать обработку в случаи если нет групп в бд
+        // TODO #2 закерировать группы пользователя
         public async Task<IActionResult> Index()
         {
-            var responseGetGroups = homeService.GetGroups();
+            var key = configuration.GetSection("CacheKeys").Get<CacheConfiguration>();
 
-            BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
-
-            if (User.Identity.IsAuthenticated)
+            if(memoryCache.TryGetValue(key.Groups, out IEnumerable<GroupViewModel> groups))
             {
-                responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity.Name);
+                BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
 
+                if (User.Identity!.IsAuthenticated)
+                {
+                    responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity.Name);
+
+                }
+
+                return View(new IndexViewModel()
+                {
+                    Groups = groups.ToList(),
+                    TrackGroups = responseGetSelectedGroups == null ?
+                    new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
+                });
+            }
+            else
+            {
+                var responseGetGroups = homeService.GetGroups();
+
+                var chacheOptons = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(90))
+                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(360000))
+                    .SetPriority(CacheItemPriority.Normal);
+
+                memoryCache.Set(key.Groups, responseGetGroups.Data.ToList(), chacheOptons);
+
+                BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
+
+                if (User.Identity!.IsAuthenticated)
+                {
+                    responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity!.Name);
+
+                }
+
+                return View(new IndexViewModel()
+                {
+                    Groups = responseGetGroups.Data.ToList() ?? new List<GroupViewModel>(),
+                    TrackGroups = responseGetSelectedGroups == null ?
+                    new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
+                });
             }
 
-            return View(new IndexViewModel()
-            {
-                Groups = responseGetGroups.Data.ToList() ?? new List<GroupViewModel>(),
-                TrackGroups = responseGetSelectedGroups == null ? 
-                new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
-            });
+        }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteGroup(int idGroup)
+        {
+            var response = await homeService.DeleteGroupToUser(User.Identity.Name, idGroup);
+
+            if(response.StatusCode != Domain.Enum.StatusCode.Ok)
+            {
+                ModelState.AddModelError("", response.Description);
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -45,7 +98,7 @@ namespace CourseTry1.Controllers
         public async Task<IActionResult> AddGroup(int idGroup)
         {
 
-            var response = await homeService.AddGroupToUser(User.Identity.Name, idGroup);
+            var response = await homeService.AddGroupToUser(User.Identity!.Name, idGroup);
 
             if(response.StatusCode == Domain.Enum.StatusCode.Ok)
             {

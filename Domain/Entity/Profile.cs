@@ -6,7 +6,7 @@ namespace CourseTry1.Domain.Entity
     {
         public long Id { get; set; }
 
-        [ForeignKey("User")]
+        /*[ForeignKey("User")]*/
         public long? UserId { get; set; }
         public User? User { get; set; }
 

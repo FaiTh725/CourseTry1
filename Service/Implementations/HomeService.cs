@@ -117,7 +117,7 @@ namespace CourseTry1.Service.Implementations
             try
             {
                 var excelFile = await fileRepository.GetByName(name);
-
+                await excelFileRepository.Clear();
 
                 if (excelFile != null)
                 {
@@ -489,6 +489,45 @@ namespace CourseTry1.Service.Implementations
             }
         }
 
+        public async Task<BaseResponse<Profile>> DeleteGroupToUser(string name, int idGroup)
+        {
+            try
+            {
+                var user = await repository.GetByLogin(name);
+                var group = await groupRepository.GetGroupById(idGroup);
+
+                if (user == null || group == null)
+                {
+                    return new BaseResponse<Profile>()
+                    {
+
+                        Description = "Не существует такого пользователя или группы",
+                        StatusCode = StatusCode.BadRequest,
+                        Data = new Profile()
+                    };
+                }
+
+                var profile = profileRepository.DeleteGroup(user, group);
+
+                return new BaseResponse<Profile>()
+                {
+                    Description = "Успешно удалили пользователя",
+                    StatusCode = StatusCode.Ok,
+                    Data = await profile
+                };
+            }
+            catch
+            {
+                return new BaseResponse<Profile>()
+                {
+
+                    Description = "Ошибка во время выполнения",
+                    StatusCode = StatusCode.BadRequest,
+                    Data = new Profile()
+                };
+            }
+        }
+
         public async Task<BaseResponse<Profile>> AddGroupToUser(string name, int idGroup)
         {
             try
@@ -526,6 +565,23 @@ namespace CourseTry1.Service.Implementations
                     Description = "Ошибка во время выполнения",
                     StatusCode = StatusCode.BadRequest,
                     Data = new Profile()
+                };
+            }
+        }
+
+        public async Task<BaseResponse<DayWeek>> GetGroup(int idGroup, DayOfWeek dayOfWeek)
+        {
+            try
+            {
+                return null;
+            }
+            catch
+            {
+                return new BaseResponse<DayWeek>()
+                {
+                    Description = "Ошибка при получении группы",
+                    StatusCode = StatusCode.BadRequest,
+                    Data = new DayWeek()
                 };
             }
         }

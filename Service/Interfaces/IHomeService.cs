@@ -27,5 +27,9 @@ namespace CourseTry1.Service.Interfaces
 
         public Task<BaseResponse<Profile>> AddGroupToUser(string name, int idGroup);
 
+        public Task<BaseResponse<Profile>> DeleteGroupToUser(string name, int idGroup);
+
+        public Task<BaseResponse<DayWeek>> GetGroup(int idGroup, DayOfWeek dayOfWeek);
+
     }
 }

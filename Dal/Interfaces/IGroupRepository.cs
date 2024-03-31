@@ -8,5 +8,7 @@ namespace CourseTry1.Dal.Interfaces
         IQueryable<SheduleGroup> GetGroups();
 
         Task<SheduleGroup> GetGroupById(int id);
+
+        Task<DayWeek> GetDayWeek(int idGroup, DayOfWeek dayOfWeek);
     }
 }

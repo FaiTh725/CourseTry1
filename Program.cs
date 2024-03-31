@@ -2,12 +2,14 @@ using CourseTry1.Dal;
 using CourseTry1.Dal.Interfaces;
 using CourseTry1.Dal.Repositories;
 using CourseTry1.Domain.Entity;
+using CourseTry1.Models;
 using CourseTry1.Service;
 using CourseTry1.Service.Implementations;
 using CourseTry1.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
@@ -30,13 +32,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+
 builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IHomeService, HomeService>();
+builder.Services.AddTransient<IGroupService, GroupService>();
 builder.Services.AddTransient<IAccountRepository<User>, AccountRepository>();
 builder.Services.AddTransient<IFileRepository, FileRepository>();
 builder.Services.AddTransient<IExcelFileRepository, ExcelFileRepository>();
 builder.Services.AddTransient<IGroupRepository, GroupRepository>();
 builder.Services.AddTransient<IProfileRepository, ProfileRepository>();
+
 
 var app = builder.Build();
 

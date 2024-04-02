@@ -18,5 +18,7 @@ namespace CourseTry1.Dal.Interfaces
         public Task DeleteFile(ExcelFile excelFile);
 
         public Task<ExcelFile> UpdateFile(ExcelFile excelFile);
+
+        public Task UnSelectFiles();
     }
 }

@@ -26,6 +26,5 @@ namespace CourseTry1.Controllers
 
             return View("SheduleDay", response.Data);  
         }
-
     }
 }

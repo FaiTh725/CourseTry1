@@ -5,7 +5,10 @@ using CourseTry1.Domain.Response;
 using CourseTry1.Domain.ViewModels.File;
 using CourseTry1.Domain.ViewModels.Group;
 using CourseTry1.Domain.ViewModels.User;
+using CourseTry1.Models;
 using CourseTry1.Service.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using OfficeOpenXml;
 
 namespace CourseTry1.Service.Implementations
@@ -18,13 +21,17 @@ namespace CourseTry1.Service.Implementations
         private readonly IGroupRepository groupRepository;
         private readonly IProfileRepository profileRepository;
         private readonly IWebHostEnvironment appEnvironment;
+        private readonly IMemoryCache cache;
+        private readonly IConfiguration configuration;
 
         public HomeService(IAccountRepository<User> repository,
             IFileRepository fileRepository,
             IWebHostEnvironment appEnvironment,
             IExcelFileRepository excelFileRepository,
             IGroupRepository groupRepository,
-            IProfileRepository profileRepository)
+            IProfileRepository profileRepository,
+            IMemoryCache cache,
+            IConfiguration configuration)
         {
             this.repository = repository;
             this.fileRepository = fileRepository;
@@ -32,6 +39,8 @@ namespace CourseTry1.Service.Implementations
             this.excelFileRepository = excelFileRepository;
             this.groupRepository = groupRepository;
             this.profileRepository = profileRepository;
+            this.cache = cache;
+            this.configuration = configuration;
         }
 
         public BaseResponse<IEnumerable<FileViewModel>> GetFiles()
@@ -117,6 +126,7 @@ namespace CourseTry1.Service.Implementations
             try
             {
                 var excelFile = await fileRepository.GetByName(name);
+
                 await excelFileRepository.Clear();
 
                 if (excelFile != null)
@@ -174,12 +184,12 @@ namespace CourseTry1.Service.Implementations
                         };
                     }
 
-                    //await excelFileRepository.Clear();
-
                     var isCorrectFile = await ParseExcel(excelFile.Name);
 
                     if (isCorrectFile)
                     {
+                        await fileRepository.UnSelectFiles();
+
                         excelFile.IsSelected = true;
 
                         await fileRepository.UpdateFile(excelFile);
@@ -433,17 +443,41 @@ namespace CourseTry1.Service.Implementations
         {
             try
             {
-                var groups = groupRepository.GetGroups().Select(x => new GroupViewModel()
+                var key = configuration.GetSection("CacheKeys").Get<CacheConfiguration>();
+
+                if (cache.TryGetValue(key.Groups, out IEnumerable<GroupViewModel> enumGroups))
                 {
-                    Id = x.Id,
-                    Name = x.NameGroup
-                });
-                return new BaseResponse<IEnumerable<GroupViewModel>>
+                    return new BaseResponse<IEnumerable<GroupViewModel>>
+                    {
+                        Data = enumGroups,
+                        Description = "Успешно получили группу",
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+                else
                 {
-                    Description = "Успешно получили группы",
-                    Data = groups,
-                    StatusCode = StatusCode.Ok
-                };
+                    var groups = groupRepository.GetGroups().Select(x => new GroupViewModel()
+                    {
+                        Id = x.Id,
+                        Name = x.NameGroup
+                    });
+
+                    var chacheOptons = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(90))
+                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(360000))
+                    .SetPriority(CacheItemPriority.Normal);
+
+                    cache.Set(key.Groups, groups.ToList(), chacheOptons);
+
+                    return new BaseResponse<IEnumerable<GroupViewModel>>
+                    {
+                        Description = "Успешно получили группы",
+                        Data = groups,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+
             }
             catch
             {
@@ -461,21 +495,43 @@ namespace CourseTry1.Service.Implementations
         {
             try
             {
-                var user = await repository.GetByLogin(name);
+                var key = configuration.GetSection("CacheKeys").Get<CacheConfiguration>();
 
-                var groups = (await profileRepository.GetSelectedGroup(user)).Select(x => new GroupViewModel()
+                if (cache.TryGetValue(key.SelectedGroups, out IEnumerable<GroupViewModel> selectedGroups))
                 {
-                    Id = x.Id,
-                    Name = x.NameGroup
-                });
+                    return new BaseResponse<IEnumerable<GroupViewModel>>()
+                    {
 
-                return new BaseResponse<IEnumerable<GroupViewModel>>()
+                        Description = "Успешно получили выбранные группы",
+                        StatusCode = StatusCode.Ok,
+                        Data = selectedGroups!
+                    };
+                }
+                else
                 {
+                    var user = await repository.GetByLogin(name);
 
-                    Description = "Успешно получили выбранные группы",
-                    StatusCode = StatusCode.Ok,
-                    Data = groups
-                };
+                    var groups = (await profileRepository.GetSelectedGroup(user)).Select(x => new GroupViewModel()
+                    {
+                        Id = x.Id,
+                        Name = x.NameGroup
+                    });
+
+                    var chacheOptons = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(60))
+                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(3600))
+                    .SetPriority(CacheItemPriority.Normal);
+
+                    cache.Set(key.SelectedGroups, groups, chacheOptons);
+
+                    return new BaseResponse<IEnumerable<GroupViewModel>>()
+                    {
+
+                        Description = "Успешно получили выбранные группы",
+                        StatusCode = StatusCode.Ok,
+                        Data = groups
+                    };
+                }
             }
             catch
             {
@@ -508,6 +564,9 @@ namespace CourseTry1.Service.Implementations
                 }
 
                 var profile = profileRepository.DeleteGroup(user, group);
+                
+                var key = configuration.GetSection("CacheKeys").Get<CacheConfiguration>();
+                cache.Remove(key.SelectedGroups);
 
                 return new BaseResponse<Profile>()
                 {
@@ -550,6 +609,9 @@ namespace CourseTry1.Service.Implementations
 
                 var profile = await profileRepository.AddGroup(user, group);
 
+                var key = configuration.GetSection("CacheKeys").Get<CacheConfiguration>();
+                cache.Remove(key.SelectedGroups);
+
                 return new BaseResponse<Profile>()
                 {
                     Description = "Успешно добавили группу",
@@ -569,21 +631,5 @@ namespace CourseTry1.Service.Implementations
             }
         }
 
-        public async Task<BaseResponse<DayWeek>> GetGroup(int idGroup, DayOfWeek dayOfWeek)
-        {
-            try
-            {
-                return null;
-            }
-            catch
-            {
-                return new BaseResponse<DayWeek>()
-                {
-                    Description = "Ошибка при получении группы",
-                    StatusCode = StatusCode.BadRequest,
-                    Data = new DayWeek()
-                };
-            }
-        }
     }
 }

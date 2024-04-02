@@ -2,6 +2,8 @@
 using CourseTry1.Domain.Response;
 using CourseTry1.Domain.ViewModels.Shedule;
 using CourseTry1.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CourseTry1.Service.Implementations
 {
@@ -14,11 +16,13 @@ namespace CourseTry1.Service.Implementations
             this.groupRepository = groupRepository;
         }
 
+        [HttpPost]
+        [Authorize]
         public async Task<BaseResponse<DaySheduleViewModel>> GetDayShedule(int idShedule, DayOfWeek? dayOfWeek)
         {
             try
             {
-                var shedule = await groupRepository.GetDayWeek(idShedule, DayOfWeek.Monday/*dayOfWeek ?? DateTime.Today.DayOfWeek*/);
+                var shedule = await groupRepository.GetDayWeek(idShedule, dayOfWeek ?? (DateTime.Today.DayOfWeek == DayOfWeek.Sunday ? DayOfWeek.Monday : DateTime.Today.DayOfWeek));
 
                 if(shedule == null)
                 {
@@ -30,15 +34,16 @@ namespace CourseTry1.Service.Implementations
                     };
                 }
 
-                return new BaseResponse<DaySheduleViewModel> 
+                return new BaseResponse<DaySheduleViewModel>
                 {
                     Description = "Успешно получили распиание дня",
                     StatusCode = Domain.Enum.StatusCode.Ok,
                     Data = new DaySheduleViewModel()
                     {
                         Group = shedule.SheduleGroup.NameGroup,
-                        Day = dayOfWeek ?? DateTime.Today.DayOfWeek,
-                        Subjects = shedule.PairingTime
+                        Day = dayOfWeek ?? (DateTime.Today.DayOfWeek == DayOfWeek.Sunday ? DayOfWeek.Monday : DateTime.Today.DayOfWeek),
+                        Subjects = shedule.PairingTime.Select(c => new SubjectViewModel(c)).ToList(),
+                        Id = idShedule
                     }
                 };
             }

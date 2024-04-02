@@ -13,9 +13,5 @@ namespace CourseTry1.Domain.Entity
         public string Password { get; set; }
 
         public Role Role { get; set; } = Role.User;
-/*
-        public long? ProfileId {  get; set; }
-
-        public Profile? Profile { get; set; }*/
     }
 }

@@ -61,7 +61,7 @@ namespace CourseTry1.Dal.Repositories
             context.Files.Remove(excelFile);
             await context.SaveChangesAsync();
         }
-
+        
         public async Task<ExcelFile> UpdateFile(ExcelFile excelFile)
         {
             context.Files.Update(excelFile);
@@ -75,5 +75,18 @@ namespace CourseTry1.Dal.Repositories
             return await context.Files.FirstOrDefaultAsync(x => x.Id == id);   
         }
 
+        public async Task UnSelectFiles()
+        {
+            var selectedFiles = context.Files.Where(x => x.IsSelected == true);
+
+            foreach(var file in selectedFiles)
+            {
+                file.IsSelected = false;
+            }
+
+            context.Files.UpdateRange(selectedFiles);
+
+            await context.SaveChangesAsync();
+        }
     }
 }

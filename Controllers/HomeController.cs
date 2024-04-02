@@ -15,67 +15,35 @@ namespace CourseTry1.Controllers
     public class HomeController : Controller
     {
         private readonly IHomeService homeService;
-        private readonly IConfiguration configuration;
-        private readonly IMemoryCache memoryCache;
 
-        public HomeController(IHomeService homeService, 
-            IConfiguration configuration,
-            IMemoryCache memoryCache)
+        public HomeController(IHomeService homeService)
         {
             this.homeService = homeService;
-            this.configuration = configuration;
-            this.memoryCache = memoryCache;
         }
 
-        // TODO #1 сделать обработку в случаи если нет групп в бд
-        // TODO #2 закерировать группы пользователя
+        // TODO #1 сделать обработку в случаи если нет групп в бд ТАМ НЕ БУДЕТ ГРУПП ТАК ЧТО ОТМЕТАЕМ
+        // TODO #3 может быть несколько избранных файлов пофиксить это
+        // TODO #5 сделать разбивку на недели (в последнию очередь а то обратно будет ебка)
+        // TODO #6 ПИДАРАСЫ НЕ МОГУТ ЗАПОЛНИТЬ НОРМАЛЬНО EXCEL ТАБЛИЦУ И ИНОГДА НЕТУ РАЗДЕЛИТЕЛЯ ИЛИ ПРЕПОДА Т Е ЧТО ПРАВИЛЬНО РАЗРАБ 
         public async Task<IActionResult> Index()
         {
-            var key = configuration.GetSection("CacheKeys").Get<CacheConfiguration>();
+            var responseGetGroups = homeService.GetGroups();
 
-            if(memoryCache.TryGetValue(key.Groups, out IEnumerable<GroupViewModel> groups))
+            BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
+
+            if (User.Identity!.IsAuthenticated)
             {
-                BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
+                responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity!.Name);
 
-                if (User.Identity!.IsAuthenticated)
-                {
-                    responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity.Name);
-
-                }
-
-                return View(new IndexViewModel()
-                {
-                    Groups = groups.ToList(),
-                    TrackGroups = responseGetSelectedGroups == null ?
-                    new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
-                });
             }
-            else
+
+            return View(new IndexViewModel()
             {
-                var responseGetGroups = homeService.GetGroups();
+                Groups = responseGetGroups.Data.ToList() ?? new List<GroupViewModel>(),
+                TrackGroups = responseGetSelectedGroups == null ?
+                new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
+            });
 
-                var chacheOptons = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromSeconds(90))
-                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(360000))
-                    .SetPriority(CacheItemPriority.Normal);
-
-                memoryCache.Set(key.Groups, responseGetGroups.Data.ToList(), chacheOptons);
-
-                BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
-
-                if (User.Identity!.IsAuthenticated)
-                {
-                    responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity!.Name);
-
-                }
-
-                return View(new IndexViewModel()
-                {
-                    Groups = responseGetGroups.Data.ToList() ?? new List<GroupViewModel>(),
-                    TrackGroups = responseGetSelectedGroups == null ?
-                    new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
-                });
-            }
 
         }
 

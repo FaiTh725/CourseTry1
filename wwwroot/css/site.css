@@ -449,55 +449,98 @@ a:hover {
     height: 40px;
 }
 
-/*.main_index-conteiner {
-    position: relative;
-    height: 84vh;
-}
-
-.main_view {
-    
-
-}
-
-.main_options {
-    padding-top: 25px;
-    padding-left: 20px;
+.shedule {
+    height: 83vh;
+    background-color: #e8ebed;
     font-size: 16px;
-    display: flex;
-    justify-content:center;
+    padding-top: 20px;
 }
 
-.main_options input[type="radio"] {
-    display: none;
+.shedule h1{
+    font-size: 25px;
+    font-weight: 700;
+    margin-left: 10px;
+    color: #008054d9;
 }
-.main_options label {
-    padding: 10px 15px;
-    border: 2px solid #008054d9;
+
+.shedule_options {
+    padding-left: 10px;
+    font-size: 20px;
+    display: flex;
+}
+
+.shedule_options form button {
+    border: 3px solid #008054d9;
     border-radius: 10px;
+    padding: 10px 15px;
     margin-right: 10px;
+    margin-top: 20px;
     transition: .3s;
 }
 
-.main_options input[type="radio"]:checked + label {
-    border: 2px solid transparent;
+.checked{
+    border: 3px solid rgba(255, 255, 255, 0.3);
     background-color: #008054d9;
     color: #fff;
+    transition: .3s;
 }
 
-.indexmain_table {
+.shedule_week {
+    margin: 10px;
+
+}
+
+.shedule_week label {
+    font-size: 20px;
+    color: #008054d9;
+    margin-top: 20px;
+    margin-right: 10px;
+    padding-bottom: 5px;
+    border-bottom: 3px solid transparent;
+    transition: .5s;
+}
+
+.shedule_week input[type="radio"] {
+    display: none;
+}
+
+.shedule_week input[type="radio"]:checked + label {
+    border-bottom: 3px solid #008054d9;
+}
+
+.shedule_shedule {
+    margin-top: 20px;
     display: flex;
     justify-content: center;
-    margin-top: 30px;
-    font-size: 16px;
+    font-size: 20px;
 }
 
-.indexmain_table--head {
+.shedule_shedule table {
+    
+    border-right: 1px solid #000;
+    border-left: 1px solid #000;
+    border-bottom: 1px solid #000;
+    border-radius: 100%;
+
+}
+
+.shedule_shedule table thead {
     background-color: #008054d9;
+
+}
+
+
+.shedule_shedule table thead tr th{
     color: #fff;
+    padding: 10px 15px;
+    border-right: 1px solid #000;
     font-weight: 700;
 }
 
-.indexmain_table--head tr th{
+.shedule_shedule table tbody tr td {
     padding: 10px 15px;
-    border: 1px solid #000; 
-}*/
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+    text-align: center;
+}
+

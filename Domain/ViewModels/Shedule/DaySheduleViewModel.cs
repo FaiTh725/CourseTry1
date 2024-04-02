@@ -6,8 +6,10 @@ namespace CourseTry1.Domain.ViewModels.Shedule
     {
         public DayOfWeek Day { get; set; }
 
-        public List<Subject> Subjects { get; set; }
+        public List<SubjectViewModel> Subjects { get; set; }
 
         public string Group {  get; set; }
+
+        public long Id { get; set; }
     }
 }

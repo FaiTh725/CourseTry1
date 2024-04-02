@@ -2,6 +2,8 @@
 using CourseTry1.Domain.ViewModels.Account;
 using CourseTry1.Service;
 using CourseTry1.Service.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 
 namespace CourseTry1.Controllers
@@ -18,12 +21,9 @@ namespace CourseTry1.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService accountService;
-        private readonly IConfigurationSection jwtSetting;
-
-        public AccountController(IAccountService accountService, IConfiguration setting)
+        public AccountController(IAccountService accountService)
         {
             this.accountService = accountService;
-            jwtSetting = setting.GetSection("JWTConfiguration");
         }
 
         [HttpGet]
@@ -42,21 +42,7 @@ namespace CourseTry1.Controllers
 
                 if (response.StatusCode == Domain.Enum.StatusCode.Ok)
                 {
-                    var identity = GetIdentity(response.Data);
-
-                    var jwt = new JwtSecurityToken(
-                        issuer: jwtSetting["Issuer"],
-                        audience: jwtSetting["Audience"],
-                        claims: identity.Claims,
-                        expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)),
-                        signingCredentials: new SigningCredentials(Config.GetSymmetricSecurityKey(jwtSetting["Key"]), 
-                        SecurityAlgorithms.HmacSha256)
-                        );
-
-                    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-                    HttpContext.Session.SetString("JWToken", encodedJwt);
-
+                    await Authentification(model);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -83,7 +69,7 @@ namespace CourseTry1.Controllers
 
                 if (response.StatusCode == Domain.Enum.StatusCode.Ok)
                 {
-                    return RedirectToAction("");
+                    return RedirectToAction("Login");
                 }
                 else
                 {
@@ -95,33 +81,29 @@ namespace CourseTry1.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            return RedirectToAction("Index");
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Account");
         }
 
-        private ClaimsIdentity GetIdentity(LoginViewModel model)
+
+        private async Task Authentification(LoginViewModel model)
         {
-            if(model != null)
+            var user = await accountService.GetUserByLogin(model.Login);
+
+            var claims = new List<Claim>()
             {
-                var claims = new List<Claim>()
-                {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, model.Login),
-                    // все кто зарегался по умолчанию пользователи
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, Role.User.ToString())
-                };
+                new Claim(ClaimsIdentity.DefaultNameClaimType, model.Login),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Data.Role.ToString())
+            };
 
-                var claimIdentity = new ClaimsIdentity(claims, "Token",
-                    ClaimsIdentity.DefaultNameClaimType,
-                    ClaimsIdentity.DefaultRoleClaimType);
+            ClaimsIdentity id = new(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType);
 
-                return claimIdentity;
-                //return claims;
-            }
-
-            return null;
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
     }
 }

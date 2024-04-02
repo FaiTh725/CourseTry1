@@ -2,11 +2,14 @@ using CourseTry1.Dal;
 using CourseTry1.Dal.Interfaces;
 using CourseTry1.Dal.Repositories;
 using CourseTry1.Domain.Entity;
+using CourseTry1.Models;
 using CourseTry1.Service;
 using CourseTry1.Service.Implementations;
 using CourseTry1.Service.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,29 +17,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
 
-var config = builder.Configuration.GetSection("JWTConfiguration");
-
-builder.Services.AddSession();
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        ValidateIssuer = true,
-        ValidIssuer = config["Issuer"],
-
-        ValidateAudience = true,
-        ValidAudience = config["Audience"],
-
-        ValidateLifetime = true,
-
-        IssuerSigningKey = Config.GetSymmetricSecurityKey(config["Key"]),
-        ValidateIssuerSigningKey = true,
-    };
-});
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/Login";
+    });
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<AppDbContext>(options => 
@@ -44,8 +33,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+
 builder.Services.AddTransient<IAccountService, AccountService>();
-builder.Services.AddTransient<IAccountRepository<User>,AccountRepository>();
+builder.Services.AddTransient<IHomeService, HomeService>();
+builder.Services.AddTransient<IGroupService, GroupService>();
+builder.Services.AddTransient<IAccountRepository<User>, AccountRepository>();
+builder.Services.AddTransient<IFileRepository, FileRepository>();
+builder.Services.AddTransient<IExcelFileRepository, ExcelFileRepository>();
+builder.Services.AddTransient<IGroupRepository, GroupRepository>();
+builder.Services.AddTransient<IProfileRepository, ProfileRepository>();
+
 
 var app = builder.Build();
 
@@ -62,25 +59,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseSession();
-
-
-
-app.Use(async (context, next) =>
-{
-    var JWToken = context.Session.GetString("JWToken");
-    if (!string.IsNullOrEmpty(JWToken))
-    {
-        context.Request.Headers.Add("Authorization", "Bearer " + JWToken);
-    }
-
-    
-    await next();
-});
 
 app.UseAuthentication();
-
-
 app.UseAuthorization();
 
 

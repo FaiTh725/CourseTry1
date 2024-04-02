@@ -1,5 +1,6 @@
 ﻿using CourseTry1.Domain.Enum;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CourseTry1.Domain.Entity
 {

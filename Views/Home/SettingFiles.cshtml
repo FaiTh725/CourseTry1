@@ -1,0 +1,46 @@
+﻿@using CourseTry1.Domain.Entity
+@model IEnumerable<FileViewModel>
+
+<div class="setting">
+    <div class="setting-header">
+        <h1>Файлы с расписанием</h1>
+    </div>
+    
+    @foreach(var file in Model)
+    {
+        <div class="setting-item">
+            <form method="post">
+                <div class="setting-item--inner">
+                    <div class="is_selected">
+                        @if(@file.IsSelected)
+                        {
+                            <img src="~/img/star.png" height="40" width="40" alt="star" />
+                        }
+                    </div>
+                    <span>@file.Name</span>
+                    <div class="setting-item--conteiner_btn">
+                        <input type="hidden" name="name" value="@file.Name" />
+                        <button class="btn main_table--save" type="submit" asp-action="DeleteFile" asp-controller="Home">Удалить</button>
+                        <button class="btn main_table--save" type="submit" asp-action="SelectFile" asp-controller="Home">Выбрать избранным</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+
+    <div class="setting-add">
+        <form method="post" class="main_side--add" enctype="multipart/form-data">
+            <div class="validation" asp-validation-summary="ModelOnly"></div>
+            <input class="main_side--input-file" type="file" id="fl" name="file" value="file"
+                   accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
+            <label class="btn main_side--label-input" for="fl">Выберите файл</label>
+
+            <div class="main_side--submit">
+                <button type="submit" asp-action="AddFiles" asp-controller="Home">
+                    <img src="~/img/plus.png" width="30" height="30" alt="Плюсик" />
+                    <span>Добавить</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

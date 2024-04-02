@@ -1,0 +1,71 @@
+﻿@model DaySheduleViewModel
+
+<div class="shedule">
+    <h1>Группа @Model.Group[3..]</h1>
+    <div class="shedule_options">
+        <form asp-action="GetShedule" asp-controller="Shedule" method="post">
+            <input type="hidden" value="@Model.Id" name="idGroup" />
+            <input type="hidden" value="@DayOfWeek.Monday" name="dayOfWeek" id="monday"/>
+            <button type="submit" class="@(Model.Day == DayOfWeek.Monday ? "checked" : "")" for="monday">Понедельник</button>
+        </form>
+        <form asp-action="GetShedule" asp-controller="Shedule" method="post">
+            <input type="hidden" value="@Model.Id" name="idGroup" />
+            <input type="hidden" value="@DayOfWeek.Tuesday" name="dayOfWeek" id="tuesday" />
+            <button type="submit" class="@(Model.Day == DayOfWeek.Tuesday ? "checked" : "")" for="tuesday">Вторник</button>
+        </form>
+        <form asp-action="GetShedule" asp-controller="Shedule" method="post">
+            <input type="hidden" value="@Model.Id" name="idGroup" />
+            <input type="hidden" value="@DayOfWeek.Wednesday" name="dayOfWeek" id="wednesday" />
+            <button type="submit" class="@(Model.Day == DayOfWeek.Wednesday ? "checked" : "")" for="wednesday">Среда</button>
+        </form>
+        <form asp-action="GetShedule" asp-controller="Shedule" method="post">
+            <input type="hidden" value="@Model.Id" name="idGroup" />
+            <input type="hidden" value="@DayOfWeek.Thursday" name="dayOfWeek" id="thursday" />
+            <button type="submit" class="@(Model.Day == DayOfWeek.Thursday ? "checked" : "")" for="Thursday">Четверг</button>
+        </form>
+        <form asp-action="GetShedule" asp-controller="Shedule" method="post">
+            <input type="hidden" value="@Model.Id" name="idGroup" />
+            <input type="hidden" value="@DayOfWeek.Friday" name="dayOfWeek" id="friday" />
+            <button type="submit" class="@(Model.Day == DayOfWeek.Friday ? "checked" : "")" for="friday">Пятница</button>
+        </form>
+        <form asp-action="GetShedule" asp-controller="Shedule" method="post">
+            <input type="hidden" value="@Model.Id" name="idGroup" />
+            <input type="hidden" value="@DayOfWeek.Saturday" name="dayOfWeek" id="saturday" />
+            <button type="submit" class="@(Model.Day == DayOfWeek.Saturday ? "checked" : "")" for="saturday">Суббота</button>
+        </form>
+
+       
+    </div>
+    <div class="shedule_week">
+        <input type="radio" value="first_week" name="weeks" id="first_week"/>
+        <label for="first_week">1 неделя</label>
+        <input type="radio" value="second_week" name="weeks" id="second_week" />
+        <label for="second_week">2 неделя</label>
+    </div>
+    <div class="shedule_shedule">
+        <table>
+            <thead>
+                <tr>
+                    <th>Время</th>
+                    <th>Дисциплина</th>
+                    <th>Преподаватель</th>
+                    <th>Корпус</th>
+                    <th>Аудитория</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var subject in Model.Subjects)
+                {
+                    <tr>
+                        <td>@subject.Time</td>
+                        <td>@subject.Subject</td>
+                        <td>@subject.Teacher</td>
+                        <td>@subject.Corpus</td>
+                        <td>@subject.Audience</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

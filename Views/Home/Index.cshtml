@@ -1,1 +1,41 @@
-﻿
+﻿@model IndexViewModel
+
+
+<div class="main main_index-conteiner">
+    <aside class="main_side">
+        <div class="main_side_content">
+            <h3>Группы</h3>
+            <div class ="main_side--add-group">
+                <form method="post">
+                    <select class="main_table--role-selector" name="idGroup">
+                        @foreach (var group in Model.Groups)
+                        {
+                            <option value="@group.Id">@group.Name</option>
+                        }
+                    </select>
+                    <button class="btn main_side--submit" type="submit" asp-action="AddGroup" asp-controller="Home">Добавить</button>
+                </form>
+            </div>
+            <ul class="main_side--list-groups">
+                @foreach (var group in Model.TrackGroups)
+                {
+                    <div class="main_side--box_item">
+                        <form method="post">
+                            <input type="hidden" name="idGroup" value="@group.Id" />
+                    <li>
+                        <button class="main_side--item" type="submit" asp-action="GetShedule" asp-controller="Shedule">@group.Name</button>
+                    </li>
+                        </form>
+                    <form method="post">
+                        <input type="hidden" name="idGroup" value="@group.Id" />
+                        <button class="btn main_side--delete_btn" type="submit" asp-action="DeleteGroup" asp-controller="Home">
+                            <img src="~/img/deleteGroup.png" width="25" height="25" alt="crossDelete" />
+                        </button>
+                    </form>
+                    </div>
+                }
+            </ul>
+        </div>
+    </aside>
+
+</div>

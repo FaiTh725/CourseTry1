@@ -7,7 +7,6 @@ using CourseTry1.Domain.ViewModels.Group;
 using CourseTry1.Domain.ViewModels.User;
 using CourseTry1.Models;
 using CourseTry1.Service.Interfaces;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using OfficeOpenXml;
 
@@ -133,6 +132,9 @@ namespace CourseTry1.Service.Implementations
                 {
                     await fileRepository.DeleteFile(excelFile);
                     fileRepository.Delete(excelFile.Name, appEnvironment);
+
+                    var key = configuration.GetSection("CacheKeys").Get<CacheConfiguration>();
+                    cache.Remove(key.Groups);
 
                     return new BaseResponse<IEnumerable<FileViewModel>>
                     {
@@ -357,6 +359,7 @@ namespace CourseTry1.Service.Implementations
             FileInfo existFile = new FileInfo(excelFilePath);
             using (ExcelPackage package = new ExcelPackage(existFile))
             {
+                // по названию можно получить курс плюс неделю
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
 
                 int colCount = worksheet.Dimension.End.Column;
@@ -462,12 +465,17 @@ namespace CourseTry1.Service.Implementations
                         Name = x.NameGroup
                     });
 
-                    var chacheOptons = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromSeconds(90))
-                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(360000))
-                    .SetPriority(CacheItemPriority.Normal);
+                    if (groups.ToList().Count > 0)
+                    {
 
-                    cache.Set(key.Groups, groups.ToList(), chacheOptons);
+                        var chacheOptons = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromSeconds(90))
+                        .SetAbsoluteExpiration(TimeSpan.FromSeconds(36000))
+                        .SetPriority(CacheItemPriority.Normal);
+
+                        cache.Set(key.Groups, groups.ToList(), chacheOptons);
+
+                    }
 
                     return new BaseResponse<IEnumerable<GroupViewModel>>
                     {
@@ -517,12 +525,15 @@ namespace CourseTry1.Service.Implementations
                         Name = x.NameGroup
                     });
 
-                    var chacheOptons = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromSeconds(60))
-                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(3600))
-                    .SetPriority(CacheItemPriority.Normal);
+                    if (groups.ToList().Count > 0)
+                    {
+                        var chacheOptons = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromSeconds(60))
+                        .SetAbsoluteExpiration(TimeSpan.FromSeconds(3600))
+                        .SetPriority(CacheItemPriority.Normal);
 
-                    cache.Set(key.SelectedGroups, groups, chacheOptons);
+                        cache.Set(key.SelectedGroups, groups, chacheOptons);
+                    }
 
                     return new BaseResponse<IEnumerable<GroupViewModel>>()
                     {
@@ -564,7 +575,7 @@ namespace CourseTry1.Service.Implementations
                 }
 
                 var profile = profileRepository.DeleteGroup(user, group);
-                
+
                 var key = configuration.GetSection("CacheKeys").Get<CacheConfiguration>();
                 cache.Remove(key.SelectedGroups);
 

@@ -20,29 +20,34 @@ namespace CourseTry1.Controllers
         {
             this.homeService = homeService;
         }
-        // TODO #7 Переписать кэширование на сервис
+        // TODO #11 переписать некоторые запросы на ajax
+        // TODO #12 если смогу добавить кнопку добавить файл с сайта бнту
+        // TODO #13 при добавлении группы отображать без года
         // TODO #8 Переписать кэширование на redis
         // TODO #9 Перенести бд в Docker
         // TODO #10 В конце можно поместить все приложение в контейнер Docker
         // TODO #5 сделать разбивку на недели (в последнию очередь а то обратно будет ебка)
         // TODO #6 ПИДАРАСЫ НЕ МОГУТ ЗАПОЛНИТЬ НОРМАЛЬНО EXCEL ТАБЛИЦУ И ИНОГДА НЕТУ РАЗДЕЛИТЕЛЯ ИЛИ ПРЕПОДА Т Е ЧТО ПРАВИЛЬНО РАЗРАБ 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int cource = 1)
         {
-            var responseGetGroups = homeService.GetGroups();
+            var responseGetGroups = homeService.GetGroups(cource);
 
             BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
+            //BaseResponse<IEnumerable<int>> responseGetCources = null;
 
             if (User.Identity!.IsAuthenticated)
             {
                 responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity!.Name);
-
+                //responseGetCources = await homeService.GetCources();
             }
 
             return View(new IndexViewModel()
             {
                 Groups = responseGetGroups.Data.ToList() ?? new List<GroupViewModel>(),
                 TrackGroups = responseGetSelectedGroups == null ?
-                new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
+                new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList(),
+                /*Cources = responseGetCources == null ?
+                new List<int>() : responseGetCources.Data.ToList()*/
             });
 
 

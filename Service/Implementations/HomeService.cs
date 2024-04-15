@@ -9,6 +9,7 @@ using CourseTry1.Models;
 using CourseTry1.Service.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using OfficeOpenXml;
+using System.Text.RegularExpressions;
 
 namespace CourseTry1.Service.Implementations
 {
@@ -359,90 +360,98 @@ namespace CourseTry1.Service.Implementations
             FileInfo existFile = new FileInfo(excelFilePath);
             using (ExcelPackage package = new ExcelPackage(existFile))
             {
+                List<SheduleGroup> excelGroups = new();
                 // по названию можно получить курс плюс неделю
-                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-
-                int colCount = worksheet.Dimension.End.Column;
-                int rowCount = worksheet.Dimension.End.Row;
-
-                List<SheduleGroup> groups = new();
-
-                try
+                foreach (var worksheet in package.Workbook.Worksheets)
                 {
-                    for (int i = 3; i <= colCount; i += 6)
+                    int colCount = worksheet.Dimension.End.Column;
+                    int rowCount = worksheet.Dimension.End.Row;
+
+                    var parseNameWorkSheet = worksheet.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                    List<SheduleGroup> groups = new();
+
+                    try
                     {
-                        if (worksheet.Cells[2, i].Value != null)
+                        for (int i = 3; i <= colCount; i += 6)
                         {
-                            groups.Add(new SheduleGroup()
+                            if (worksheet.Cells[2, i].Value != null)
                             {
-                                NameGroup = worksheet.Cells[2, i].Value.ToString()!
-                            });
-
-                            groups[^1].Weeks = new List<DayWeek>();
-
-                            // Заполняем дни недели
-                            int scoreDay = 1;
-                            for (int j = 3; j <= rowCount; j += 2)
-                            {
-                                if (worksheet.Cells[j, 1].Value != null)
+                                groups.Add(new SheduleGroup()
                                 {
-                                    // Добавли название дней
-                                    groups[^1].Weeks.Add(new DayWeek()
-                                    {
-                                        DayOfWeek = (DayOfWeek)(scoreDay),
-                                        PairingTime = new()
-                                    });
-                                    scoreDay++;
+                                    NameGroup = worksheet.Cells[2, i].Value.ToString()!,
+                                    Cource = int.Parse(parseNameWorkSheet[0]),
+                                    Week = (Week)int.Parse(parseNameWorkSheet[2])
+                                });
 
-                                    // проходимя по строкам и добавляем время - предмет
-                                    for (int k = j; k <= rowCount; k++)
-                                    {
-                                        if (worksheet.Cells[k, 1].Value != null && k != j)
-                                        {
-                                            break;
-                                        }
-                                        if (worksheet.Cells[k, i].Value != null)
-                                        {
-                                            if (worksheet.Cells[k, 2].Value == null)
-                                            {
-                                                groups[^1].Weeks[^1].PairingTime
-                                                .Add(new Subject()
-                                                {
-                                                    Time = groups[^1].Weeks[^1].PairingTime[^1].Time,
-                                                    Name = worksheet.Cells[k, i].Value.ToString()!
-                                                });
-                                            }
-                                            else
-                                            {
-                                                groups[^1].Weeks[^1].PairingTime
-                                                .Add(new Subject()
-                                                {
-                                                    Time = worksheet.Cells[k, 2].Value.ToString()!,
-                                                    Name = worksheet.Cells[k, i].Value.ToString()!
-                                                });
-                                            }
+                                groups[^1].Weeks = new List<DayWeek>();
 
+                                // Заполняем дни недели
+                                int scoreDay = 1;
+                                for (int j = 3; j <= rowCount; j += 2)
+                                {
+                                    if (worksheet.Cells[j, 1].Value != null)
+                                    {
+                                        // Добавли название дней
+                                        groups[^1].Weeks.Add(new DayWeek()
+                                        {
+                                            DayOfWeek = (DayOfWeek)(scoreDay),
+                                            PairingTime = new()
+                                        });
+                                        scoreDay++;
+
+                                        // проходимя по строкам и добавляем время - предмет
+                                        for (int k = j; k <= rowCount; k++)
+                                        {
+                                            if (worksheet.Cells[k, 1].Value != null && k != j)
+                                            {
+                                                break;
+                                            }
+                                            if (worksheet.Cells[k, i].Value != null)
+                                            {
+                                                if (worksheet.Cells[k, 2].Value == null)
+                                                {
+                                                    groups[^1].Weeks[^1].PairingTime
+                                                    .Add(new Subject()
+                                                    {
+                                                        Time = groups[^1].Weeks[^1].PairingTime[^1].Time,
+                                                        Name = worksheet.Cells[k, i].Value.ToString()!
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    groups[^1].Weeks[^1].PairingTime
+                                                    .Add(new Subject()
+                                                    {
+                                                        Time = worksheet.Cells[k, 2].Value.ToString()!,
+                                                        Name = worksheet.Cells[k, i].Value.ToString()!
+                                                    });
+                                                }
+
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+
+                        excelGroups.AddRange(groups);
+                        //await excelFileRepository.Save(groups);
                     }
-
-                    await excelFileRepository.Clear();
-
-                    await excelFileRepository.Save(groups);
-
-                    return true;
+                    catch
+                    {
+                        return false;
+                    }
                 }
-                catch
-                {
-                    return false;
-                }
+
+                await excelFileRepository.Clear();
+                await excelFileRepository.Save(excelGroups);
+
+                return true;
             }
         }
 
-        public BaseResponse<IEnumerable<GroupViewModel>> GetGroups()
+        public BaseResponse<IEnumerable<GroupViewModel>> GetGroups(int cource)
         {
             try
             {
@@ -459,7 +468,7 @@ namespace CourseTry1.Service.Implementations
                 }
                 else
                 {
-                    var groups = groupRepository.GetGroups().Select(x => new GroupViewModel()
+                    var groups = groupRepository.GetGroups().Where(x => x.Cource == cource && x.Week == Week.first).Select(x => new GroupViewModel()
                     {
                         Id = x.Id,
                         Name = x.NameGroup
@@ -642,5 +651,27 @@ namespace CourseTry1.Service.Implementations
             }
         }
 
+        /*public async Task<BaseResponse<IEnumerable<int>>> GetCources()
+        {
+            try
+            {
+                return new BaseResponse<IEnumerable<int>>
+                {
+                    Data = await groupRepository.GetCources(),
+                    Description = "Успешно получили список курсов",
+                    StatusCode = StatusCode.Ok,
+                };
+            }
+            catch
+            {
+                return new BaseResponse<IEnumerable<int>>()
+                {
+
+                    Description = "Ошибка во время выполнения",
+                    StatusCode = StatusCode.BadRequest,
+                    Data = new List<int>()
+                };
+            }
+        }*/
     }
 }

@@ -65,7 +65,7 @@ namespace CourseTry1.Dal.Repositories
         {
             var profile = await context.Profiles.Include(x => x.User)
                 .Include(x => x.Groups)
-                .FirstOrDefaultAsync(y => y.UserId == user.Id);
+                .FirstOrDefaultAsync(y => y.UserId == user.Id) ?? new Profile();
 
             return profile.Groups;
         }

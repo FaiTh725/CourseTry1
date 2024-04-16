@@ -10,6 +10,8 @@ namespace CourseTry1.Dal.Repositories
     {
         private readonly AppDbContext context;
 
+        public string NameFileFromBNTU => "fromSite.xlsx";
+
         public FileRepository(AppDbContext context)
         {
             this.context = context;
@@ -87,6 +89,48 @@ namespace CourseTry1.Dal.Repositories
             context.Files.UpdateRange(selectedFiles);
 
             await context.SaveChangesAsync();
+        }
+
+        public async Task<bool> Add(string url, IWebHostEnvironment appEnvironment)
+        {
+            using (HttpClient httpClient = new())
+            {
+                try
+                {
+                    HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using (Stream contentStream = await response.Content.ReadAsStreamAsync())
+                        {
+                            using (FileStream fileStream = new FileStream(appEnvironment.WebRootPath + "/files/" + NameFileFromBNTU, FileMode.Create))
+                            {
+                                await contentStream.CopyToAsync(fileStream);
+                            }
+                        }
+
+                        context.Files.Add(new ExcelFile()
+                        {
+                            Name = NameFileFromBNTU,
+                            Path = "/files/" + NameFileFromBNTU
+                        });
+
+                        await context.SaveChangesAsync();
+                        
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
     }
 }

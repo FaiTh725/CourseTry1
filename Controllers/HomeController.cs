@@ -15,10 +15,12 @@ namespace CourseTry1.Controllers
     public class HomeController : Controller
     {
         private readonly IHomeService homeService;
+        private readonly IWebHostEnvironment enviroment;
 
-        public HomeController(IHomeService homeService)
+        public HomeController(IHomeService homeService, IWebHostEnvironment enviroment)
         {
             this.homeService = homeService;
+            this.enviroment = enviroment;
         }
         // TODO #11 переписать некоторые запросы на ajax
         // TODO #12 если смогу добавить кнопку добавить файл с сайта бнту
@@ -26,28 +28,24 @@ namespace CourseTry1.Controllers
         // TODO #8 Переписать кэширование на redis
         // TODO #9 Перенести бд в Docker
         // TODO #10 В конце можно поместить все приложение в контейнер Docker
-        // TODO #5 сделать разбивку на недели (в последнию очередь а то обратно будет ебка)
+        // TODO #5 сделать разбивку на недели (в последнию очередь а то обратно будет ебка) ВРОДЕ СДЕАЛ
         // TODO #6 ПИДАРАСЫ НЕ МОГУТ ЗАПОЛНИТЬ НОРМАЛЬНО EXCEL ТАБЛИЦУ И ИНОГДА НЕТУ РАЗДЕЛИТЕЛЯ ИЛИ ПРЕПОДА Т Е ЧТО ПРАВИЛЬНО РАЗРАБ 
         public async Task<IActionResult> Index(int cource = 1)
         {
             var responseGetGroups = homeService.GetGroups(cource);
 
             BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
-            //BaseResponse<IEnumerable<int>> responseGetCources = null;
 
             if (User.Identity!.IsAuthenticated)
             {
                 responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity!.Name);
-                //responseGetCources = await homeService.GetCources();
             }
 
             return View(new IndexViewModel()
             {
                 Groups = responseGetGroups.Data.ToList() ?? new List<GroupViewModel>(),
                 TrackGroups = responseGetSelectedGroups == null ?
-                new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList(),
-                /*Cources = responseGetCources == null ?
-                new List<int>() : responseGetCources.Data.ToList()*/
+                new List<GroupViewModel>() : responseGetSelectedGroups.Data.ToList()
             });
 
 
@@ -166,6 +164,50 @@ namespace CourseTry1.Controllers
             }
 
             return View("SettingFiles", response.Data);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, Methodist")]
+        public async Task<IActionResult> GetFromSite()
+        {
+            var response = await homeService.GetFileFromSite();
+
+            if(response.StatusCode != Domain.Enum.StatusCode.Ok)
+            {
+                ModelState.AddModelError("", response.Description);
+            }
+
+            /*using (HttpClient httpClient = new ())
+            {
+                try
+                {
+                    HttpResponseMessage response = await httpClient.GetAsync("https://files.bntu.by/s/bacUnC0XQGGiiJn/download", HttpCompletionOption.ResponseHeadersRead);
+                    
+                    if(response.IsSuccessStatusCode)
+                    {
+                        using (Stream contentStream = await response.Content.ReadAsStreamAsync())
+                        {
+                            using (FileStream fileStream = new FileStream(enviroment.WebRootPath+ "/files/"+ "fromSite.xlsx", FileMode.Create))
+                            {
+                                await contentStream.CopyToAsync(fileStream);
+                            }
+                        }
+
+                        Console.WriteLine("Файл успешно скачен");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Все пошло по пизде чуть позже");
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Все пошло по пизде");
+                }
+            }
+
+            return null;*/
+            return RedirectToAction("SettingFiles");
         }
 
         [HttpPost]

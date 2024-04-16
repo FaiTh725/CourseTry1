@@ -651,27 +651,45 @@ namespace CourseTry1.Service.Implementations
             }
         }
 
-        /*public async Task<BaseResponse<IEnumerable<int>>> GetCources()
+        public async Task<BaseResponse<ExcelFile>> GetFileFromSite()
         {
             try
             {
-                return new BaseResponse<IEnumerable<int>>
+                var file = await fileRepository.GetByName(fileRepository.NameFileFromBNTU);
+
+                if(file is not null)
                 {
-                    Data = await groupRepository.GetCources(),
-                    Description = "Успешно получили список курсов",
-                    StatusCode = StatusCode.Ok,
+                    await fileRepository.DeleteFile(file);
+                }
+
+                var successGetFile = await fileRepository.Add("https://files.bntu.by/s/bacUnC0XQGGiiJn/download", appEnvironment);
+            
+                if(successGetFile)
+                {
+                    return new BaseResponse<ExcelFile>()
+                    {
+                        Data = new ExcelFile(),
+                        Description = "Успешно получили файл с сайта БНТУ",
+                        StatusCode = StatusCode.Ok,
+                    };
+                }
+
+                return new BaseResponse<ExcelFile>() 
+                { 
+                    Description = "Не удалось получить файл",
+                    StatusCode = StatusCode.BadRequest,
+                    Data = new ExcelFile()
                 };
             }
             catch
             {
-                return new BaseResponse<IEnumerable<int>>()
+                return new BaseResponse<ExcelFile>()
                 {
-
-                    Description = "Ошибка во время выполнения",
-                    StatusCode = StatusCode.BadRequest,
-                    Data = new List<int>()
+                    Description = "Ошибка при получении файла файла",
+                    Data = new ExcelFile(),
+                    StatusCode = Domain.Enum.StatusCode.BadRequest
                 };
             }
-        }*/
+        }
     }
 }

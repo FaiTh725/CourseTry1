@@ -295,8 +295,15 @@ a:hover {
 
 }
 
+.main_side--parse-site {
+    display: flex;
+    justify-content:right;
+    margin-right: 30px;
+    margin-top: 20px;
+}
+
 .main_side_content {
-    display: none; /* Скрытый контент при свернутом состоянии */
+    display: none;
 }
 
 .main_side:hover {

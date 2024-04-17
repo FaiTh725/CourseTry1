@@ -1,4 +1,5 @@
-﻿using CourseTry1.Service.Interfaces;
+﻿using CourseTry1.Domain.Enum;
+using CourseTry1.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +16,9 @@ namespace CourseTry1.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> GetShedule(int idGroup, DayOfWeek? dayOfWeek)
+        public async Task<IActionResult> GetShedule(int idGroup, DayOfWeek? dayOfWeek, int cource = 1, Week weeks = Week.first)
         {
-            var response = await groupService.GetDayShedule(idGroup, dayOfWeek);
+            var response = await groupService.GetDayShedule(idGroup, dayOfWeek, cource, weeks);
 
             if(response.StatusCode != Domain.Enum.StatusCode.Ok)
             {

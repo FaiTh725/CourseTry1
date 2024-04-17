@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using CourseTry1.Domain.Enum;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Contracts;
 
 namespace CourseTry1.Domain.Entity
@@ -9,9 +10,11 @@ namespace CourseTry1.Domain.Entity
 
         public string NameGroup { get; set; }
 
-        public List<DayWeek> Weeks { get; set; } = new List<DayWeek> ();
+        public Week Week { get; set; }
 
-        /*public List<Profile> Profiles { get; set; } = new List<Profile>();*/
+        public int Cource { get; set; }
+
+        public List<DayWeek> Weeks { get; set; } = new List<DayWeek> ();
     }
 
     public class DayWeek

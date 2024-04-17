@@ -5,7 +5,11 @@ namespace CourseTry1.Dal.Interfaces
 {
     public interface IFileRepository
     {
+        public string NameFileFromBNTU {  get; }
+
         public Task Add(IFormFile file, IWebHostEnvironment appEnvironment);
+
+        public Task<bool> Add(string url, IWebHostEnvironment appEnvironment);
 
         public bool Delete(string fileName, IWebHostEnvironment appEnvironment);
 

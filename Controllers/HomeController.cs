@@ -15,26 +15,29 @@ namespace CourseTry1.Controllers
     public class HomeController : Controller
     {
         private readonly IHomeService homeService;
+        private readonly IWebHostEnvironment enviroment;
 
-        public HomeController(IHomeService homeService)
+        public HomeController(IHomeService homeService, IWebHostEnvironment enviroment)
         {
             this.homeService = homeService;
+            this.enviroment = enviroment;
         }
-
-        // TODO #1 сделать обработку в случаи если нет групп в бд ТАМ НЕ БУДЕТ ГРУПП ТАК ЧТО ОТМЕТАЕМ
-        // TODO #3 может быть несколько избранных файлов пофиксить это
-        // TODO #5 сделать разбивку на недели (в последнию очередь а то обратно будет ебка)
+        // TODO #11 переписать некоторые запросы на ajax
+        // TODO #13 при добавлении группы отображать без года
+        // TODO #14 изучить и добавить automapper
+        // TODO #8 Переписать кэширование на redis
+        // TODO #9 Перенести бд в Docker
+        // TODO #10 В конце можно поместить все приложение в контейнер Docker
         // TODO #6 ПИДАРАСЫ НЕ МОГУТ ЗАПОЛНИТЬ НОРМАЛЬНО EXCEL ТАБЛИЦУ И ИНОГДА НЕТУ РАЗДЕЛИТЕЛЯ ИЛИ ПРЕПОДА Т Е ЧТО ПРАВИЛЬНО РАЗРАБ 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int cource = 1)
         {
-            var responseGetGroups = homeService.GetGroups();
+            var responseGetGroups = homeService.GetGroups(cource);
 
             BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
 
             if (User.Identity!.IsAuthenticated)
             {
                 responseGetSelectedGroups = await homeService.GetSelectedGroup(User.Identity!.Name);
-
             }
 
             return View(new IndexViewModel()
@@ -160,6 +163,20 @@ namespace CourseTry1.Controllers
             }
 
             return View("SettingFiles", response.Data);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, Methodist")]
+        public async Task<IActionResult> GetFromSite()
+        {
+            var response = await homeService.GetFileFromSite();
+
+            if(response.StatusCode != Domain.Enum.StatusCode.Ok)
+            {
+                ModelState.AddModelError("", response.Description);
+            }
+
+            return RedirectToAction("SettingFiles");
         }
 
         [HttpPost]

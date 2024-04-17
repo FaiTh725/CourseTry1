@@ -23,12 +23,11 @@ namespace CourseTry1.Controllers
             this.enviroment = enviroment;
         }
         // TODO #11 переписать некоторые запросы на ajax
-        // TODO #12 если смогу добавить кнопку добавить файл с сайта бнту
         // TODO #13 при добавлении группы отображать без года
+        // TODO #14 изучить и добавить automapper
         // TODO #8 Переписать кэширование на redis
         // TODO #9 Перенести бд в Docker
         // TODO #10 В конце можно поместить все приложение в контейнер Docker
-        // TODO #5 сделать разбивку на недели (в последнию очередь а то обратно будет ебка) ВРОДЕ СДЕАЛ
         // TODO #6 ПИДАРАСЫ НЕ МОГУТ ЗАПОЛНИТЬ НОРМАЛЬНО EXCEL ТАБЛИЦУ И ИНОГДА НЕТУ РАЗДЕЛИТЕЛЯ ИЛИ ПРЕПОДА Т Е ЧТО ПРАВИЛЬНО РАЗРАБ 
         public async Task<IActionResult> Index(int cource = 1)
         {
@@ -177,36 +176,6 @@ namespace CourseTry1.Controllers
                 ModelState.AddModelError("", response.Description);
             }
 
-            /*using (HttpClient httpClient = new ())
-            {
-                try
-                {
-                    HttpResponseMessage response = await httpClient.GetAsync("https://files.bntu.by/s/bacUnC0XQGGiiJn/download", HttpCompletionOption.ResponseHeadersRead);
-                    
-                    if(response.IsSuccessStatusCode)
-                    {
-                        using (Stream contentStream = await response.Content.ReadAsStreamAsync())
-                        {
-                            using (FileStream fileStream = new FileStream(enviroment.WebRootPath+ "/files/"+ "fromSite.xlsx", FileMode.Create))
-                            {
-                                await contentStream.CopyToAsync(fileStream);
-                            }
-                        }
-
-                        Console.WriteLine("Файл успешно скачен");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Все пошло по пизде чуть позже");
-                    }
-                }
-                catch
-                {
-                    Console.WriteLine("Все пошло по пизде");
-                }
-            }
-
-            return null;*/
             return RedirectToAction("SettingFiles");
         }
 

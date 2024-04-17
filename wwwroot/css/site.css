@@ -311,7 +311,7 @@ a:hover {
 }
 
 .main_side:hover .main_side_content {
-    display: block; /* Показываем контент при наведении */
+    display: block;
 }
 
 
@@ -475,7 +475,26 @@ a:hover {
     display: flex;
 }
 
-.shedule_options button {
+.shedule_options input[type=radio] {
+    display:none;
+}
+
+.shedule_options label {
+    border: 3px solid #008054d9;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-right: 10px;
+    margin-top: 20px;
+    transition: .3s;
+}
+
+.shedule_options input[type=radio]:checked + label {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    background-color: #008054d9;
+    color: #fff;
+}
+
+/*.shedule_options button {
     border: 3px solid #008054d9;
     border-radius: 10px;
     padding: 10px 15px;
@@ -489,29 +508,31 @@ a:hover {
     background-color: #008054d9;
     color: #fff;
     transition: .3s;
-}
+}*/
 
 .shedule_week {
     margin: 10px;
 
 }
 
-.shedule_week button {
+
+
+/*.shedule_week button {
     font-size: 20px;
     color: #008054d9;
     margin-top: 20px;
     margin-right: 10px;
     padding-bottom: 5px;
     transition: .5s;
+}*/
+
+.shedule_week input[type="radio"] {
+    display: none;
 }
 
-/*.shedule_week input[type="radio"] {
-    display: none;
-}*/
-
-/*.shedule_week input[type="radio"]:checked + label {
+.shedule_week input[type="radio"]:checked + label {
     border-bottom: 3px solid #008054d9;
-}*/
+}
 
 .checked1 {
     border-bottom: 3px solid #008054d9;

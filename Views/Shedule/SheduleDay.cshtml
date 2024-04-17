@@ -9,36 +9,36 @@
 
         <input type="hidden" value="@Model.Id" name="idGroup"/>
             
-            <label for="monday">Понедельник</label>
             <input type="radio" name="dayOfWeek" value="@DayOfWeek.Monday" id="monday" @(Model.Day == DayOfWeek.Monday ? "checked" : "") />
+            <label for="monday">Понедельник</label>
         
-            <label for="tuesday">Вторник</label>
             <input type="radio" name="dayOfWeek" value="@DayOfWeek.Tuesday" id="tuesday" @(Model.Day == DayOfWeek.Tuesday ? "checked" : "") />
+            <label for="tuesday">Вторник</label>
 
-            <label for="wednesday">Понедельник</label>
             <input type="radio" name="dayOfWeek" value="@DayOfWeek.Wednesday" id="wednesday" @(Model.Day == DayOfWeek.Wednesday ? "checked" : "") />
+            <label for="wednesday">Среда</label>
 
-            <label for="thusday">Четверг</label>
             <input type="radio" name="dayOfWeek" value="@DayOfWeek.Thursday" id="thusday" @(Model.Day == DayOfWeek.Thursday ? "checked" : "") />
+            <label for="thusday">Четверг</label>
 
-            <label for="friday">Пятница</label>
             <input type="radio" name="dayOfWeek" value="@DayOfWeek.Friday" id="friday" @(Model.Day == DayOfWeek.Friday ? "checked" : "") />
+            <label for="friday">Пятница</label>
 
-            <label for="saturday">Суббота</label>
             <input type="radio" name="dayOfWeek" value="@DayOfWeek.Saturday" id="saturday" @(Model.Day == DayOfWeek.Saturday ? "checked" : "") />
+            <label for="saturday">Суббота</label>
     </div>
     <div class="shedule_week">
-            <label for="first_week">1 неделя</label>
             <input type="radio" name="weeks" value="@Week.first" id="first_week" @(Model.CurrentWeek == Week.first ? "checked" : "") />
-            <label for="second_week">2 неделя</label>
+            <label for="first_week">1 неделя</label>
             <input type="radio" name="weeks" value="@Week.second" id="second_week" @(Model.CurrentWeek == Week.second ? "checked" : "") />
+            <label for="second_week">2 неделя</label>
     </div>
     <div class="shedule_week">
         @{int counter = 1;}
             @foreach (var cource in Model.Cources)
             {
-                <label for="cource">@cource.ToString() Курс</label>
-                <input type="radio" name="cource" value="@cource" id="first_week" @(counter == Model.SelectedCource ? "checked" : "") />
+                <input type="radio" name="cource" value="@cource" id=$"cource{@counter}" @(counter == Model.SelectedCource ? "checked" : "") />
+                <label for=$"cource{@counter}">@cource.ToString() Курс</label>
                 counter++;
             }
     </div>

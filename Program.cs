@@ -9,9 +9,6 @@ using CourseTry1.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +39,7 @@ builder.Services.AddTransient<IFileRepository, FileRepository>();
 builder.Services.AddTransient<IExcelFileRepository, ExcelFileRepository>();
 builder.Services.AddTransient<IGroupRepository, GroupRepository>();
 builder.Services.AddTransient<IProfileRepository, ProfileRepository>();
-
+builder.Services.AddTransient<ICasheService, CasheService>();
 
 var app = builder.Build();
 

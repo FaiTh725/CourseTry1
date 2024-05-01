@@ -31,7 +31,7 @@ namespace CourseTry1.Controllers
         // TODO #6 ПИДАРАСЫ НЕ МОГУТ ЗАПОЛНИТЬ НОРМАЛЬНО EXCEL ТАБЛИЦУ И ИНОГДА НЕТУ РАЗДЕЛИТЕЛЯ ИЛИ ПРЕПОДА Т Е ЧТО ПРАВИЛЬНО РАЗРАБ 
         public async Task<IActionResult> Index(int cource = 1)
         {
-            var responseGetGroups = homeService.GetGroups(cource);
+            var responseGetGroups = await homeService.GetGroups(cource);
 
             BaseResponse<IEnumerable<GroupViewModel>> responseGetSelectedGroups = null;
 

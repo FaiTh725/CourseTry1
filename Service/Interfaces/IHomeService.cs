@@ -21,7 +21,7 @@ namespace CourseTry1.Service.Interfaces
 
         public Task<BaseResponse<User>> UpdateUser(int id, Role role);
 
-        public BaseResponse<IEnumerable<GroupViewModel>> GetGroups(int cource);
+        public Task<BaseResponse<IEnumerable<GroupViewModel>>> GetGroups(int cource);
 
         public Task<BaseResponse<IEnumerable<GroupViewModel>>> GetSelectedGroup(string name);
 
